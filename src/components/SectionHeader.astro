@@ -1,0 +1,20 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  intro?: string;
+  align?: 'left' | 'center';
+  invert?: boolean;
+}
+const { eyebrow, title, intro, align = 'left', invert = false } = Astro.props;
+const wrap = align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl';
+---
+<div class:list={['reveal', wrap]}>
+  {eyebrow && (
+    <p class:list={['mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em]', invert ? 'text-accent' : 'text-accent']}>
+      <span class="h-1 w-1 rounded-full bg-accent"></span>{eyebrow}
+    </p>
+  )}
+  <h2 class:list={['text-[length:var(--text-h2)] font-semibold leading-[1.1]', invert && 'text-[#f6efec]']}>{title}</h2>
+  {intro && <p class:list={['mt-4 text-base leading-relaxed md:text-lg', invert ? 'text-[#cdbfb8]' : 'text-muted']}>{intro}</p>}
+</div>

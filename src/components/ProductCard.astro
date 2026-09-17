@@ -1,0 +1,24 @@
+---
+import Icon from './Icon.astro';
+import type { CollectionEntry } from 'astro:content';
+interface Props { product: CollectionEntry<'products'>; }
+const { product } = Astro.props;
+const { data, id } = product;
+---
+<a
+  href={`/products/${id}`}
+  class="reveal group flex h-full flex-col rounded-[var(--radius)] border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-lift"
+>
+  <div class="flex items-start justify-between">
+    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-accent transition-colors group-hover:bg-accent group-hover:text-white">
+      <Icon name={data.icon} size={24} />
+    </span>
+    <span class="text-xs font-medium uppercase tracking-wide text-muted">{data.category}</span>
+  </div>
+  <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold">{data.name}</h3>
+  <p class="mt-2 flex-1 text-sm leading-relaxed text-muted">{data.summary}</p>
+  <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+    View product
+    <Icon name="arrow" size={16} class="transition-transform duration-200 group-hover:translate-x-1" />
+  </span>
+</a>

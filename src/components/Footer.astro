@@ -1,0 +1,46 @@
+---
+import { site, cta } from '@/data/site';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+const year = new Date().getFullYear();
+const cols = [
+  { title: 'Product', links: [
+    { label: 'Products', href: '/products' },
+    { label: 'Services', href: '/services' },
+  ]},
+  { title: 'Company', links: [
+    { label: 'About', href: '/about' },
+    { label: 'Contact', href: '/contact' },
+  ]},
+];
+---
+<footer class="bg-ink text-[#d9cdc6]">
+  <div class="container-x py-16">
+    <div class="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr] md:gap-8">
+      <div>
+        <div class="[&_span]:text-[#f6efec]"><Logo /></div>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed text-[#b6a89f]">{site.tagline}</p>
+        <a href={cta.primary.href} class="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover">
+          {cta.primary.label}<Icon name="arrow" size={16} />
+        </a>
+      </div>
+      {cols.map((col) => (
+        <nav aria-label={col.title}>
+          <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-[#8c7d74]">{col.title}</h3>
+          <ul class="mt-4 space-y-2.5">
+            {col.links.map((l) => (
+              <li><a href={l.href} class="text-sm text-[#d9cdc6] transition-colors hover:text-white">{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+      ))}
+    </div>
+
+    <div class="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-[#8c7d74] md:flex-row md:items-center md:justify-between">
+      <p>© {year} {site.legalName}. All rights reserved.</p>
+      <a href={`mailto:${site.email}`} class="inline-flex items-center gap-2 transition-colors hover:text-white">
+        <Icon name="mail" size={16} />{site.email}
+      </a>
+    </div>
+  </div>
+</footer>

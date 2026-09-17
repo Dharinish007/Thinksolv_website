@@ -1,0 +1,113 @@
+---
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import Icon from '@/components/Icon.astro';
+import { values, timeline } from '@/data/site';
+
+// Team: headcount and structure are known; individual names/photos are CONFIRM.
+const team = [
+  { role: 'Founder & CEO', note: 'Sets product direction and first principles.' },
+  { role: 'Technical', note: 'Builds and maintains the product ecosystem.' },
+  { role: 'Marketing', note: 'Connects the products with the people who need them.' },
+];
+---
+<Base title="About" description="ThinkSolv is a small team building document-centric software with a long-term, first-principles approach.">
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="container-x max-w-3xl">
+      <p class="reveal mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-accent">About</p>
+      <h1 class="reveal text-[length:var(--text-h1)] font-semibold leading-[1.05]">A small team with a long-term view.</h1>
+      <p class="reveal mt-5 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
+        ThinkSolv began in 2022 as a one-person company. Today we’re seven people building software designed to stay out of the way and last.
+      </p>
+    </div>
+  </section>
+
+  <!-- WHO WE ARE -->
+  <Section tone="surface">
+    <div class="grid gap-10 md:grid-cols-2">
+      <SectionHeader eyebrow="Who we are" title="Builders of quiet, reliable software" intro="We build focused tools for document workflows across Google Workspace and Chrome, for people who expect speed, predictability and deep integration." />
+      <p class="reveal self-center text-lg leading-relaxed text-ink-soft">
+        We avoid unnecessary complexity because it increases mental overhead for the people using our tools.
+        Simplicity requires intent — and we choose it deliberately, in every product and every line.
+      </p>
+    </div>
+  </Section>
+
+  <!-- MISSION + VISION -->
+  <Section tone="base">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-8 shadow-soft">
+        <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="target" size={22} /></span>
+        <h2 class="mt-5 text-[length:var(--text-h3)] font-semibold">Our mission</h2>
+        <p class="mt-3 leading-relaxed text-muted">Remove repetitive effort so individuals and teams can focus on higher-value work.</p>
+      </div>
+      <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-8 shadow-soft" style="--reveal-delay:80ms">
+        <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name="compass" size={22} /></span>
+        <h2 class="mt-5 text-[length:var(--text-h3)] font-semibold">Our vision</h2>
+        <p class="mt-3 leading-relaxed text-muted">Software that fades into the background — integrating seamlessly, staying stable, and requiring minimal attention.</p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- VALUES -->
+  <Section tone="surface">
+    <SectionHeader eyebrow="Values" title="What guides every decision" />
+    <div class="mt-12 grid gap-5 sm:grid-cols-2">
+      {values.map((v, i) => (
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7" style={`--reveal-delay:${i * 70}ms`}>
+          <h3 class="text-[length:var(--text-h3)] font-semibold">{v.title}</h3>
+          <p class="mt-2 leading-relaxed text-muted">{v.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- TIMELINE -->
+  <Section tone="ink" contain={false}>
+    <div class="container-x">
+      <SectionHeader eyebrow="Timeline" title="How we got here" invert />
+      <ol class="mt-12 relative border-l border-white/10 pl-8">
+        {timeline.map((t, i) => (
+          <li class="reveal relative pb-10 last:pb-0" style={`--reveal-delay:${i * 80}ms`}>
+            <span class="absolute -left-[calc(2rem+1px)] top-1.5 flex h-4 w-4 -translate-x-1/2 items-center justify-center">
+              <span class="h-3 w-3 rounded-full bg-accent ring-4 ring-[#1b1512]"></span>
+            </span>
+            <div class="font-display text-2xl font-semibold text-accent">{t.year}</div>
+            <h3 class="mt-1 text-[length:var(--text-h3)] font-semibold text-[#f6efec]">{t.title}</h3>
+            <p class="mt-1.5 max-w-lg leading-relaxed text-[#c0b2aa]">{t.body}</p>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </Section>
+
+  <!-- TEAM -->
+  <Section tone="base">
+    <SectionHeader eyebrow="Team" title="Seven people, three functions" intro="Founder/CEO, technical and marketing. Individual profiles are pending — names and photos marked CONFIRM." />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {team.map((m, i) => (
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 text-center shadow-soft" style={`--reveal-delay:${i * 70}ms`}>
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-accent-soft font-display text-xl font-semibold text-accent">{m.role[0]}</div>
+          <h3 class="mt-4 font-semibold">{m.role}</h3>
+          <p class="mt-1.5 text-sm text-muted">{m.note}</p>
+          <span class="mt-3 inline-block rounded-full bg-surface-2 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent">CONFIRM names</span>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- HOW WE THINK -->
+  <Section tone="surface">
+    <div class="reveal mx-auto max-w-3xl text-center">
+      <Icon name="quote" size={32} class="mx-auto text-accent" />
+      <p class="mt-5 font-display text-2xl leading-snug text-ink md:text-3xl">“Every product begins with a simple question: what if this task didn’t need to exist at all?”</p>
+      <p class="mt-5 text-sm text-muted">That question guides us to design at the system level — eliminating repetitive work before it reaches the user.</p>
+    </div>
+  </Section>
+
+  <CtaSection title="Want to build with a team that keeps it simple?" />
+</Base>

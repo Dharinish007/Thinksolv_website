@@ -1,0 +1,195 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import ProofStrip from '@/components/ProofStrip.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import Button from '@/components/Button.astro';
+import Icon from '@/components/Icon.astro';
+import { cta } from '@/data/site';
+
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+const previewProducts = products.slice(0, 3);
+
+const whatWeDo = [
+  { icon: 'workspace', title: 'Google Workspace apps', body: 'Add-ons for Docs, Sheets and Drive that fit the way people already work — no new place to learn.' },
+  { icon: 'chrome', title: 'Chrome extensions', body: 'Focused tools that live in the browser and remove repetitive steps from everyday document tasks.' },
+  { icon: 'spark', title: 'Document AI & workflows', body: 'AppSheet and workflow solutions that automate document-centric work end to end.' },
+];
+
+const buildSteps = [
+  { n: '01', title: 'Understand the real problem', body: 'We start by asking what the task is really for — often the best fix is removing it entirely.' },
+  { n: '02', title: 'Design at the system level', body: 'We choose tools and architecture only after the problem is clear, avoiding complexity by intent.' },
+  { n: '03', title: 'Ship something that lasts', body: 'Simple to use, reliable at scale, and easy to evolve — built for long-term utility over novelty.' },
+];
+---
+<Base>
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-36 pb-20 md:pt-44 md:pb-28">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="pointer-events-none absolute -top-40 right-[-10%] -z-10 h-[38rem] w-[38rem] rounded-full bg-accent-soft blur-3xl opacity-60"></div>
+    <div class="container-x">
+      <div class="max-w-3xl">
+        <p class="reveal mb-6 inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-ink-soft shadow-soft">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>
+          Thinksolv Technologies · Document-centric software
+        </p>
+        <h1 class="reveal text-[length:var(--text-hero)] font-semibold leading-[1.02]">
+          Building software,<br /><span class="text-accent">thoughtfully.</span>
+        </h1>
+        <p class="reveal mt-6 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
+          We build focused tools for document workflows across Google Workspace and Chrome —
+          designed for clarity, deep integration, and little to no learning curve.
+        </p>
+        <div class="reveal mt-8 flex flex-wrap items-center gap-3" style="--reveal-delay:140ms">
+          <Button href={cta.secondary.href} variant="primary" icon="arrow">{cta.secondary.label}</Button>
+          <Button href={cta.primary.href} variant="secondary" icon="arrowUpRight">{cta.primary.label}</Button>
+        </div>
+        <p class="reveal mt-6 text-sm text-muted" style="--reveal-delay:200ms">
+          Trusted by <strong class="font-semibold text-ink">150,000+</strong> users globally.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROOF -->
+  <Section tone="base" class="!pt-0">
+    <ProofStrip />
+    <p class="reveal mt-3 text-center text-xs text-muted">Metrics marked CONFIRM are pending verification before launch.</p>
+  </Section>
+
+  <!-- WHAT WE DO -->
+  <Section tone="surface">
+    <SectionHeader
+      eyebrow="What we do"
+      title="Tools for document-centric work"
+      intro="We build for people who live in Docs, Sheets and Drive — and expect speed, predictability and deep integration."
+    />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {whatWeDo.map((item, i) => (
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 shadow-soft" style={`--reveal-delay:${i * 80}ms`}>
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-accent">
+            <Icon name={item.icon} size={24} />
+          </span>
+          <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold">{item.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{item.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- PRODUCTS PREVIEW -->
+  <Section tone="base">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <SectionHeader
+        eyebrow="Products"
+        title="A focused product ecosystem"
+        intro="Each product begins with one question: what if this task didn’t need to exist at all?"
+      />
+      <a href="/products" class="reveal group inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+        View all products
+        <Icon name="arrow" size={16} class="transition-transform group-hover:translate-x-1" />
+      </a>
+    </div>
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {previewProducts.map((p) => <ProductCard product={p} />)}
+    </div>
+  </Section>
+
+  <!-- HOW WE BUILD -->
+  <Section tone="ink" contain={false}>
+    <div class="container-x">
+      <SectionHeader
+        eyebrow="How we build"
+        title="First principles over defaults"
+        intro="We avoid unnecessary complexity because it increases mental overhead for users. Simplicity requires intent — and we choose it deliberately."
+        invert
+      />
+      <div class="mt-12 grid gap-8 md:grid-cols-3">
+        {buildSteps.map((s, i) => (
+          <div class="reveal" style={`--reveal-delay:${i * 90}ms`}>
+            <div class="font-display text-4xl font-semibold text-accent">{s.n}</div>
+            <div class="mt-4 h-px w-full bg-white/10"></div>
+            <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold text-[#f6efec]">{s.title}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-[#c0b2aa]">{s.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </Section>
+
+  <!-- SERVICES PREVIEW -->
+  <Section tone="surface">
+    <div class="grid items-center gap-10 md:grid-cols-2">
+      <div>
+        <SectionHeader
+          eyebrow="Services"
+          title="Beyond products: solutions we build with you"
+          intro="Document AI and AppSheet / workflow solutions that remove repetitive effort from how your team works."
+        />
+        <div class="reveal mt-8">
+          <Button href="/services" variant="secondary" icon="arrow">Explore services</Button>
+        </div>
+      </div>
+      <ul class="reveal grid gap-3">
+        {[
+          { icon: 'spark', t: 'Document AI', d: 'Automating document creation, conversion and processing.' },
+          { icon: 'layers', t: 'AppSheet & workflow', d: 'No-code and low-code workflow automation on Google’s platform.' },
+          { icon: 'workspace', t: 'Workspace integration', d: 'Solutions that fit natively into Docs, Sheets and Drive.' },
+        ].map((s) => (
+          <li class="flex items-start gap-4 rounded-[var(--radius)] border border-line bg-surface p-5">
+            <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent"><Icon name={s.icon} size={20} /></span>
+            <div>
+              <p class="font-semibold">{s.t}</p>
+              <p class="mt-1 text-sm text-muted">{s.d}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Section>
+
+  <!-- SELECTED WORK / RESULTS (CONFIRM) -->
+  <Section tone="base">
+    <SectionHeader
+      eyebrow="Selected work"
+      title="Results that speak quietly"
+      intro="Real outcomes from teams using ThinkSolv products. Case studies below are structured and pending verified numbers."
+    />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <div class="reveal rounded-[var(--radius)] border border-dashed border-line bg-surface-2 p-7" style={`--reveal-delay:${i * 70}ms`}>
+          <span class="inline-flex rounded-full bg-accent-soft px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-accent">CONFIRM</span>
+          <p class="mt-4 font-display text-3xl font-semibold text-ink">—</p>
+          <p class="mt-1 text-sm text-muted">Metric / outcome to confirm</p>
+          <p class="mt-4 text-sm leading-relaxed text-ink-soft">Add a short, verified result once a real case study is available. No numbers are invented here.</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- ABOUT PREVIEW -->
+  <Section tone="surface">
+    <div class="grid items-center gap-10 md:grid-cols-[1.1fr_1fr]">
+      <div>
+        <SectionHeader
+          eyebrow="About"
+          title="A small team with a long-term view"
+          intro="ThinkSolv began in 2022 as a one-person company. Today we’re a team of seven — founder, technical and marketing — building software meant to last."
+        />
+        <div class="reveal mt-8">
+          <Button href="/about" variant="secondary" icon="arrow">Read our story</Button>
+        </div>
+      </div>
+      <blockquote class="reveal rounded-[var(--radius)] border border-line bg-surface p-8 shadow-soft">
+        <Icon name="quote" size={28} class="text-accent" />
+        <p class="mt-4 font-display text-xl leading-snug text-ink">“When a tool fades into the background, it is working exactly as intended.”</p>
+        <footer class="mt-4 text-sm text-muted">— How we think about software</footer>
+      </blockquote>
+    </div>
+  </Section>
+
+  <CtaSection />
+</Base>

@@ -1,0 +1,136 @@
+---
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import ProofStrip from '@/components/ProofStrip.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import Icon from '@/components/Icon.astro';
+
+const problems = [
+  'Repetitive document work that eats hours every week.',
+  'Manual conversions between Docs, PDF, Word and Markdown.',
+  'Copy-paste workflows that break formatting and lose structure.',
+  'Processes that live in people’s heads instead of in software.',
+];
+
+const services = [
+  { icon: 'spark', title: 'Document AI', body: 'Automating document creation, conversion and processing so routine work handles itself.' },
+  { icon: 'layers', title: 'AppSheet & workflow solutions', body: 'No-code and low-code automation on Google’s platform, tailored to how your team actually works.' },
+  { icon: 'workspace', title: 'Workspace integration', body: 'Solutions that fit natively into Docs, Sheets and Drive — no new place for people to learn.' },
+  { icon: 'chrome', title: 'Custom extensions', body: 'Focused Chrome tools that remove a specific, repetitive step from everyday work.' },
+];
+
+const capabilities = [
+  'First-principles problem analysis',
+  'Google Workspace add-ons',
+  'Chrome extension development',
+  'Document conversion pipelines',
+  'AppSheet app development',
+  'Workflow automation',
+  'Data-driven, maintainable systems',
+  'Reliability at scale',
+];
+
+const steps = [
+  { n: '01', t: 'Understand', d: 'We start with the real problem — what the work is for, and whether it needs to exist at all.' },
+  { n: '02', t: 'Design', d: 'We choose the simplest architecture that solves it, avoiding complexity by intent.' },
+  { n: '03', t: 'Build', d: 'We ship something reliable, integrated and easy to evolve.' },
+  { n: '04', t: 'Refine', d: 'We tune it around real usage so it keeps fading into the background.' },
+];
+
+const useCases = [
+  { t: 'Content & publishing teams', d: 'Draft in Docs, publish everywhere — without the copy-paste cleanup.' },
+  { t: 'Operations & admin', d: 'Batch-convert and standardize documents across whole folders.' },
+  { t: 'Developers & docs', d: 'Move structured content between Docs, Markdown and PDF cleanly.' },
+];
+---
+<Base title="Services" description="Document AI, AppSheet and workflow solutions that remove repetitive effort from document-centric work.">
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="container-x max-w-3xl">
+      <p class="reveal mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Services</p>
+      <h1 class="reveal text-[length:var(--text-h1)] font-semibold leading-[1.05]">Remove the work before it reaches your team.</h1>
+      <p class="reveal mt-5 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
+        Beyond our products, we build Document AI and workflow solutions with you — designed to eliminate repetitive effort at the system level.
+      </p>
+    </div>
+  </section>
+
+  <!-- PROBLEMS WE SOLVE -->
+  <Section tone="surface">
+    <SectionHeader eyebrow="Problems we solve" title="The work that shouldn’t need a human" intro="If your team spends time on any of these, there is usually a simpler system underneath." />
+    <ul class="mt-10 grid gap-4 md:grid-cols-2">
+      {problems.map((p, i) => (
+        <li class="reveal flex items-start gap-3 rounded-[var(--radius)] border border-line bg-surface p-6" style={`--reveal-delay:${i * 60}ms`}>
+          <Icon name="target" size={22} class="mt-0.5 shrink-0 text-accent" />
+          <span class="leading-relaxed text-ink">{p}</span>
+        </li>
+      ))}
+    </ul>
+  </Section>
+
+  <!-- SERVICES -->
+  <Section tone="base">
+    <SectionHeader eyebrow="What we offer" title="Services built around your workflow" />
+    <div class="mt-12 grid gap-5 sm:grid-cols-2">
+      {services.map((s, i) => (
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 shadow-soft" style={`--reveal-delay:${i * 70}ms`}>
+          <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name={s.icon} size={24} /></span>
+          <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold">{s.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{s.body}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- CAPABILITIES -->
+  <Section tone="ink" contain={false}>
+    <div class="container-x">
+      <SectionHeader eyebrow="Capabilities" title="What we bring to the table" invert />
+      <div class="mt-10 flex flex-wrap gap-3">
+        {capabilities.map((c, i) => (
+          <span class="reveal inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#221a16] px-4 py-2 text-sm text-[#e6dbd4]" style={`--reveal-delay:${i * 40}ms`}>
+            <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>{c}
+          </span>
+        ))}
+      </div>
+    </div>
+  </Section>
+
+  <!-- HOW WE WORK -->
+  <Section tone="surface">
+    <SectionHeader eyebrow="How we work" title="A deliberate, four-step approach" />
+    <div class="mt-12 grid gap-6 md:grid-cols-4">
+      {steps.map((s, i) => (
+        <div class="reveal" style={`--reveal-delay:${i * 70}ms`}>
+          <div class="font-display text-3xl font-semibold text-accent">{s.n}</div>
+          <div class="mt-3 h-px w-full bg-line"></div>
+          <h3 class="mt-4 font-semibold">{s.t}</h3>
+          <p class="mt-1.5 text-sm leading-relaxed text-muted">{s.d}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- USE CASES -->
+  <Section tone="base">
+    <SectionHeader eyebrow="Use cases" title="Who this is for" />
+    <div class="mt-12 grid gap-5 md:grid-cols-3">
+      {useCases.map((u, i) => (
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 shadow-soft" style={`--reveal-delay:${i * 70}ms`}>
+          <h3 class="text-[length:var(--text-h3)] font-semibold">{u.t}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{u.d}</p>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- PROOF -->
+  <Section tone="surface">
+    <SectionHeader eyebrow="Proof" title="Grounded in real usage" intro="Our products already support work at scale. Service outcomes and case studies are pending verified figures." align="center" />
+    <div class="mt-12"><ProofStrip tone="surface" /></div>
+  </Section>
+
+  <CtaSection title="Have a workflow worth automating?" intro="Tell us where the repetitive work is. We’ll help you design it away." />
+</Base>

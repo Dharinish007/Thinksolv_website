@@ -1,0 +1,20 @@
+---
+import { metrics } from '@/data/site';
+interface Props { tone?: 'base' | 'surface'; }
+const { tone = 'surface' } = Astro.props;
+---
+<div class:list={['reveal grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius)] border border-line md:grid-cols-4', tone === 'surface' ? 'bg-line' : 'bg-line']}>
+  {metrics.map((m) => (
+    <div class="bg-surface p-6 text-center md:p-8">
+      <p class="font-display text-[length:var(--text-h2)] font-semibold leading-none text-ink">
+        {('raw' in m && m.raw)
+          ? <span>{m.value}{m.suffix}</span>
+          : <span data-count={m.value} data-suffix={m.suffix}>0</span>}
+      </p>
+      <p class="mt-2 text-sm text-muted">
+        {m.label}
+        {m.confirm && <span class="ml-1 align-super text-[10px] font-semibold text-accent" title="Unverified — pending confirmation">CONFIRM</span>}
+      </p>
+    </div>
+  ))}
+</div>

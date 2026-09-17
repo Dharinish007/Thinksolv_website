@@ -1,0 +1,29 @@
+---
+import { cta } from '@/data/site';
+import Button from './Button.astro';
+interface Props {
+  title?: string;
+  intro?: string;
+}
+const {
+  title = 'Let’s build something that stays out of the way.',
+  intro = 'Tell us what slows your team down. We’ll help you remove the work before it reaches anyone.',
+} = Astro.props;
+---
+<section class="bg-ink text-[#f3ece8]">
+  <div class="container-x py-20 md:py-28">
+    <div class="reveal relative overflow-hidden rounded-[calc(var(--radius)*1.4)] border border-white/10 bg-[#221a16] px-6 py-14 text-center md:px-12 md:py-20">
+      <div class="grid-motif pointer-events-none absolute inset-0 opacity-40"></div>
+      <div class="relative mx-auto max-w-2xl">
+        <h2 class="text-[length:var(--text-h1)] font-semibold leading-[1.08] text-[#f7f1ee]">{title}</h2>
+        <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[#c6b8b0] md:text-lg">{intro}</p>
+        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Button href={cta.primary.href} variant="primary">{cta.primary.label}</Button>
+          <a href={cta.secondary.href} class="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-[#f3ece8] transition-colors hover:border-white/50">
+            {cta.secondary.label}
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,140 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import Button from '@/components/Button.astro';
+import Icon from '@/components/Icon.astro';
+import { cta } from '@/data/site';
+
+export async function getStaticPaths() {
+  const products = await getCollection('products');
+  return products.map((product) => ({
+    params: { slug: product.id },
+    props: { product, all: products },
+  }));
+}
+
+const { product, all } = Astro.props;
+const { data } = product;
+const related = all
+  .filter((p) => p.id !== product.id && p.data.category === data.category)
+  .concat(all.filter((p) => p.id !== product.id && p.data.category !== data.category))
+  .slice(0, 3);
+---
+<Base title={data.name} description={data.summary}>
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="container-x">
+      <a href="/products" class="reveal mb-8 inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent">
+        <Icon name="arrow" size={16} class="rotate-180" />Back to products
+      </a>
+      <div class="grid items-start gap-8 md:grid-cols-[1.4fr_1fr]">
+        <div>
+          <div class="reveal flex items-center gap-3">
+            <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent-soft text-accent"><Icon name={data.icon} size={28} /></span>
+            <div class="flex flex-col gap-1">
+              <span class="text-xs font-medium uppercase tracking-wide text-muted">{data.category} · {data.platform}</span>
+            </div>
+          </div>
+          <h1 class="reveal mt-6 text-[length:var(--text-h1)] font-semibold leading-[1.05]">{data.name}</h1>
+          <p class="reveal mt-4 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">{data.tagline}</p>
+          <div class="reveal mt-8 flex flex-wrap gap-3" style="--reveal-delay:140ms">
+            {data.storeUrl
+              ? <Button href={data.storeUrl} variant="primary" icon="arrowUpRight">Get {data.name}</Button>
+              : <Button href={cta.primary.href} variant="primary">Request access</Button>}
+            <Button href={cta.primary.href} variant="secondary" icon="arrow">Talk to us</Button>
+          </div>
+          {data.needsConfirm && (
+            <p class="reveal mt-5 inline-flex items-center gap-2 rounded-full bg-accent-soft px-3 py-1.5 text-xs font-medium text-accent">
+              <Icon name="spark" size={14} />CONFIRM — product details pending verification
+            </p>
+          )}
+        </div>
+        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-6 shadow-soft" style="--reveal-delay:100ms">
+          <p class="text-sm leading-relaxed text-ink-soft">{data.summary}</p>
+          <dl class="mt-6 space-y-3 border-t border-line pt-5 text-sm">
+            <div class="flex justify-between gap-4"><dt class="text-muted">Platform</dt><dd class="font-medium text-ink">{data.platform}</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-muted">Category</dt><dd class="font-medium text-ink">{data.category}</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-muted">Rating</dt><dd class="font-medium text-muted">{data.rating ?? 'CONFIRM'}</dd></div>
+            <div class="flex justify-between gap-4"><dt class="text-muted">Users</dt><dd class="font-medium text-muted">{data.users ?? 'CONFIRM'}</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROBLEM + SOLUTION -->
+  <Section tone="surface">
+    <div class="grid gap-6 md:grid-cols-2">
+      <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-8">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-muted">The problem</p>
+        <p class="mt-4 text-lg leading-relaxed text-ink">{data.problem}</p>
+      </div>
+      <div class="reveal rounded-[var(--radius)] border border-accent/20 bg-accent-soft/50 p-8" style="--reveal-delay:80ms">
+        <p class="text-xs font-semibold uppercase tracking-[0.14em] text-accent">Our solution</p>
+        <p class="mt-4 text-lg leading-relaxed text-ink">{data.solution}</p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- HOW IT WORKS -->
+  <Section tone="base">
+    <SectionHeader eyebrow="How it works" title={`${data.name} in three steps`} />
+    <ol class="mt-12 grid gap-6 md:grid-cols-3">
+      {data.howItWorks.map((step, i) => (
+        <li class="reveal relative rounded-[var(--radius)] border border-line bg-surface p-7" style={`--reveal-delay:${i * 80}ms`}>
+          <span class="font-display text-4xl font-semibold text-accent/30">{String(i + 1).padStart(2, '0')}</span>
+          <h3 class="mt-3 text-[length:var(--text-h3)] font-semibold">{step.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{step.body}</p>
+        </li>
+      ))}
+    </ol>
+  </Section>
+
+  <!-- FEATURES -->
+  <Section tone="surface">
+    <SectionHeader eyebrow="Features" title="Built around the details that matter" />
+    <div class="mt-12 grid gap-5 sm:grid-cols-2">
+      {data.features.map((f, i) => (
+        <div class="reveal flex items-start gap-4 rounded-[var(--radius)] border border-line bg-surface p-6" style={`--reveal-delay:${i * 60}ms`}>
+          <span class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-accent-soft text-accent"><Icon name="check" size={20} /></span>
+          <div>
+            <h3 class="font-semibold">{f.title}</h3>
+            <p class="mt-1 text-sm leading-relaxed text-muted">{f.body}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- OUTCOMES -->
+  <Section tone="ink" contain={false}>
+    <div class="container-x">
+      <SectionHeader eyebrow="Outcomes" title="What you get back" invert />
+      <ul class="mt-10 grid gap-4 md:grid-cols-2">
+        {data.outcomes.map((o, i) => (
+          <li class="reveal flex items-start gap-3 rounded-[var(--radius)] border border-white/10 bg-[#221a16] p-6 text-[#e6dbd4]" style={`--reveal-delay:${i * 70}ms`}>
+            <Icon name="check" size={20} class="mt-0.5 shrink-0 text-accent" />
+            <span class="leading-relaxed">{o}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Section>
+
+  <!-- RELATED -->
+  {related.length > 0 && (
+    <Section tone="base">
+      <SectionHeader eyebrow="Related products" title="Explore the rest of the ecosystem" />
+      <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {related.map((p) => <ProductCard product={p} />)}
+      </div>
+    </Section>
+  )}
+
+  <CtaSection />
+</Base>

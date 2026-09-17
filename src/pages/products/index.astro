@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '@/layouts/Base.astro';
+import Section from '@/components/Section.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import ProductCard from '@/components/ProductCard.astro';
+import CtaSection from '@/components/CtaSection.astro';
+import Button from '@/components/Button.astro';
+import Icon from '@/components/Icon.astro';
+
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+const categories = ['All', ...Array.from(new Set(products.map((p) => p.data.category)))];
+const featured = products.find((p) => p.data.featured) ?? products[0];
+---
+<Base title="Products" description="Focused Chrome extensions and Google Workspace add-ons for document conversion and automation.">
+  <!-- HERO -->
+  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="container-x max-w-3xl">
+      <p class="reveal mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Products</p>
+      <h1 class="reveal text-[length:var(--text-h1)] font-semibold leading-[1.05]">Small tools that remove real work.</h1>
+      <p class="reveal mt-5 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
+        Every product is built for people who work daily in Docs, Sheets and Drive — designed to stay out of the way and just work.
+      </p>
+    </div>
+  </section>
+
+  <!-- ECOSYSTEM -->
+  <Section tone="surface" class="!py-12">
+    <div class="reveal grid gap-5 md:grid-cols-2">
+      {[
+        { icon: 'workspace', t: 'Google Workspace', d: 'Add-ons that run natively inside Docs, Sheets and Drive — nothing leaves your account.' },
+        { icon: 'chrome', t: 'Chrome platform', d: 'Extensions that bring document tools directly into the browser you already use.' },
+      ].map((e) => (
+        <div class="flex items-start gap-4 rounded-[var(--radius)] border border-line bg-surface p-6">
+          <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name={e.icon} size={24} /></span>
+          <div>
+            <h2 class="text-[length:var(--text-h3)] font-semibold">{e.t}</h2>
+            <p class="mt-1.5 text-sm leading-relaxed text-muted">{e.d}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- CATEGORIES + ALL PRODUCTS -->
+  <Section tone="base">
+    <SectionHeader eyebrow="All products" title="Browse the ecosystem" />
+    <div class="reveal mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Filter products by category">
+      {categories.map((c, i) => (
+        <button
+          type="button"
+          role="tab"
+          class="filter-pill rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-accent/40 aria-selected:border-accent aria-selected:bg-accent aria-selected:text-white"
+          data-filter={c}
+          aria-selected={i === 0 ? 'true' : 'false'}
+        >{c}</button>
+      ))}
+    </div>
+    <div id="product-grid" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {products.map((p) => (
+        <div class="product-item" data-category={p.data.category}>
+          <ProductCard product={p} />
+        </div>
+      ))}
+    </div>
+  </Section>
+
+  <!-- FEATURED -->
+  {featured && (
+    <Section tone="ink" contain={false}>
+      <div class="container-x">
+        <div class="grid items-center gap-10 md:grid-cols-2">
+          <div class="reveal">
+            <p class="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent"><span class="h-1 w-1 rounded-full bg-accent"></span>Featured product</p>
+            <h2 class="text-[length:var(--text-h2)] font-semibold text-[#f6efec]">{featured.data.name}</h2>
+            <p class="mt-4 text-lg leading-relaxed text-[#c6b8b0]">{featured.data.tagline}</p>
+            <p class="mt-3 text-sm leading-relaxed text-[#a99b93]">{featured.data.summary}</p>
+            <div class="mt-7"><Button href={`/products/${featured.id}`} variant="primary">Explore {featured.data.name}</Button></div>
+          </div>
+          <div class="reveal rounded-[calc(var(--radius)*1.2)] border border-white/10 bg-[#221a16] p-8">
+            <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-accent"><Icon name={featured.data.icon} size={28} /></span>
+            <ul class="mt-6 space-y-3">
+              {featured.data.features.slice(0, 4).map((f) => (
+                <li class="flex items-start gap-3 text-sm text-[#d9cdc6]">
+                  <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
+                  <span><strong class="font-semibold text-[#f3ece8]">{f.title}.</strong> {f.body}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </Section>
+  )}
+
+  <CtaSection title="Not sure which tool fits?" intro="Tell us your workflow and we’ll point you to the right product — or build what’s missing." />
+</Base>
+
+<script>
+  const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
+  const items = document.querySelectorAll<HTMLElement>('.product-item');
+  pills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      const filter = pill.dataset.filter;
+      pills.forEach((p) => p.setAttribute('aria-selected', String(p === pill)));
+      items.forEach((item) => {
+        const show = filter === 'All' || item.dataset.category === filter;
+        item.style.display = show ? '' : 'none';
+      });
+    });
+  });
+</script>

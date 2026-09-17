@@ -1,0 +1,126 @@
+---
+import { nav, cta } from '@/data/site';
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+const path = Astro.url.pathname;
+const isActive = (href: string) =>
+  href === '/' ? path === '/' : path.startsWith(href);
+---
+<header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
+  <div class="container-x">
+    <nav
+      class="mt-3 flex items-center justify-between rounded-full border border-transparent px-4 py-2.5 transition-all duration-300"
+      aria-label="Primary"
+      data-nav
+    >
+      <a href="/" class="rounded-full" aria-label="ThinkSolv home"><Logo /></a>
+
+      <ul class="hidden items-center gap-1 md:flex">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'relative rounded-full px-3.5 py-2 text-sm transition-colors',
+                isActive(item.href) ? 'text-accent' : 'text-ink-soft hover:text-ink',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+              {isActive(item.href) && (
+                <span class="absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-accent"></span>
+              )}
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="flex items-center gap-2">
+        <a
+          href={cta.primary.href}
+          class="hidden rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-all hover:bg-accent-hover hover:-translate-y-0.5 md:inline-flex"
+        >{cta.primary.label}</a>
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobile-menu"
+          data-menu-toggle
+        >
+          <Icon name="menu" />
+        </button>
+      </div>
+    </nav>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="fixed inset-0 z-50 hidden bg-bg/98 backdrop-blur-sm md:hidden"
+    data-menu-panel
+  >
+    <div class="container-x flex h-full flex-col">
+      <div class="mt-3 flex items-center justify-between px-4 py-2.5">
+        <Logo />
+        <button
+          type="button"
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink"
+          aria-label="Close menu"
+          data-menu-close
+        >
+          <Icon name="close" />
+        </button>
+      </div>
+      <ul class="mt-6 flex flex-col gap-1 px-2">
+        {nav.map((item) => (
+          <li>
+            <a
+              href={item.href}
+              class:list={[
+                'block rounded-2xl px-4 py-4 text-2xl font-display font-medium',
+                isActive(item.href) ? 'text-accent' : 'text-ink',
+              ]}
+            >{item.label}</a>
+          </li>
+        ))}
+      </ul>
+      <a
+        href={cta.primary.href}
+        class="mt-auto mb-8 inline-flex items-center justify-center rounded-full bg-accent px-6 py-4 text-base font-medium text-white"
+      >{cta.primary.label}</a>
+    </div>
+  </div>
+</header>
+
+<script>
+  const header = document.getElementById('site-header');
+  const navEl = header?.querySelector('[data-nav]');
+  const onScroll = () => {
+    if (!navEl) return;
+    if (window.scrollY > 12) {
+      navEl.classList.add('bg-surface/85', 'backdrop-blur-md', 'border-line', 'shadow-soft');
+    } else {
+      navEl.classList.remove('bg-surface/85', 'backdrop-blur-md', 'border-line', 'shadow-soft');
+    }
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const panel = document.querySelector('[data-menu-panel]');
+  const toggle = document.querySelector('[data-menu-toggle]');
+  const open = () => {
+    panel?.classList.remove('hidden');
+    toggle?.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  };
+  const close = () => {
+    panel?.classList.add('hidden');
+    toggle?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  };
+  toggle?.addEventListener('click', open);
+  document.querySelector('[data-menu-close]')?.addEventListener('click', close);
+  panel?.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
+  document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
+</script>

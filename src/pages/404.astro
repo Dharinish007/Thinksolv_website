@@ -1,0 +1,19 @@
+---
+import Base from '@/layouts/Base.astro';
+import Button from '@/components/Button.astro';
+import { cta } from '@/data/site';
+---
+<Base title="Page not found" noindex>
+  <section class="relative flex min-h-[70vh] items-center overflow-hidden">
+    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
+    <div class="container-x text-center">
+      <p class="font-display text-[length:var(--text-hero)] font-semibold text-accent">404</p>
+      <h1 class="mt-2 text-[length:var(--text-h2)] font-semibold">This page faded a little too far into the background.</h1>
+      <p class="mx-auto mt-4 max-w-md text-muted">The page you’re looking for doesn’t exist or has moved.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-3">
+        <Button href="/" variant="primary">Back home</Button>
+        <Button href={cta.secondary.href} variant="secondary" icon="arrow">{cta.secondary.label}</Button>
+      </div>
+    </div>
+  </section>
+</Base>
