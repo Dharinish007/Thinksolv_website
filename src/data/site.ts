@@ -45,7 +45,7 @@ export const metrics = [
 export const timeline = [
   { year: '2022', title: 'ThinkSolv begins', body: 'Founded as a one-person company with a first-principles approach to everyday software.' },
   { year: '2023', title: 'A second builder', body: 'The team grows to two, deepening focus on the Google Workspace and Chrome ecosystem.' },
-  { year: '2024', title: 'Product ecosystem grows', body: 'Document-centric tools expand across Docs, Sheets and Drive workflows.' }, // CONFIRM specifics
+  { year: '2024', title: 'Product ecosystem grows', body: 'Document-centric tools expand across Docs, Sheets and Drive workflows.', confirm: true }, // CONFIRM specifics — hidden until verified
   { year: '2026', title: 'A team of seven', body: 'Founder/CEO, technical and marketing functions supporting 150,000+ users.' },
 ] as const;
 

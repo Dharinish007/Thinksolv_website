@@ -39,14 +39,19 @@ function initCounters() {
     };
     requestAnimationFrame(tick);
   };
+  // The final value stays in place until the number starts entering view; it resets to 0 there
+  // and counts up at 60% visibility — so captures, print or skipped sections never show "0".
   const io = new IntersectionObserver((entries) => {
-    entries.forEach((e) => { if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); } });
-  }, { threshold: 0.6 });
-  counters.forEach((c) => {
-    // Start from 0 only once JS is sure to animate it (HTML ships the final value)
-    if (!reduce()) c.textContent = '0' + (c.dataset.suffix || '');
-    io.observe(c);
-  });
+    entries.forEach((e) => {
+      const el = e.target as HTMLElement;
+      if (e.intersectionRatio >= 0.6) { run(el); io.unobserve(el); }
+      else if (e.isIntersecting && !reduce() && !el.dataset.primed) {
+        el.dataset.primed = '1';
+        el.textContent = '0' + (el.dataset.suffix || '');
+      }
+    });
+  }, { threshold: [0, 0.6] });
+  counters.forEach((c) => io.observe(c));
   cleanups.push(() => io.disconnect());
 }
 

@@ -2,9 +2,12 @@
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import PageHero from '@/components/PageHero.astro';
 import StatBand from '@/components/StatBand.astro';
 import CtaSection from '@/components/CtaSection.astro';
+import Button from '@/components/Button.astro';
 import Icon from '@/components/Icon.astro';
+import { cta } from '@/data/site';
 
 const problems = [
   'Repetitive document work that eats hours every week.',
@@ -45,92 +48,131 @@ const useCases = [
 ];
 ---
 <Base title="Services" description="Document AI, AppSheet and workflow solutions that remove repetitive effort from document-centric work.">
-  <!-- HERO -->
-  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
-    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
-    <div class="container-x max-w-3xl">
-      <p class="reveal mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Services</p>
-      <h1 class="reveal text-[length:var(--text-h1)] font-semibold leading-[1.05]">Remove the work before it reaches your team.</h1>
-      <p class="reveal mt-5 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
-        Beyond our products, we build Document AI and workflow solutions with you — designed to eliminate repetitive effort at the system level.
-      </p>
-    </div>
-  </section>
+  <PageHero
+    eyebrow="Services"
+    lines={['Remove the work before', 'it reaches your team.']}
+    accentLast
+    intro="Beyond our products, we build Document AI and workflow solutions with you — designed to eliminate repetitive effort at the system level."
+    layout="4/8"
+  >
+    <Button href={cta.primary.href}>{cta.primary.label}</Button>
+  </PageHero>
 
   <!-- PROBLEMS WE SOLVE -->
   <Section tone="surface">
-    <SectionHeader eyebrow="Problems we solve" title="The work that shouldn’t need a human" intro="If your team spends time on any of these, there is usually a simpler system underneath." />
-    <ul class="mt-10 grid gap-4 md:grid-cols-2">
+    <SectionHeader number="01" eyebrow="Problems we solve" title="The work that shouldn’t need a human" intro="If your team spends time on any of these, there is usually a simpler system underneath." layout="split" />
+    <ol class="mt-14 grid gap-x-8 md:grid-cols-2">
       {problems.map((p, i) => (
-        <li class="reveal flex items-start gap-3 rounded-[var(--radius)] border border-line bg-surface p-6" style={`--reveal-delay:${i * 60}ms`}>
-          <Icon name="target" size={22} class="mt-0.5 shrink-0 text-accent" />
-          <span class="leading-relaxed text-ink">{p}</span>
+        <li class="reveal grid grid-cols-[3rem_1fr] gap-4 border-t border-line-strong py-8" style={`--reveal-delay:${(i % 2) * 60}ms`}>
+          <span class="font-mono text-sm text-muted">{String(i + 1).padStart(2, '0')}</span>
+          <span class="font-display text-[length:var(--text-h3)] leading-snug text-ink">{p}</span>
         </li>
       ))}
-    </ul>
+    </ol>
   </Section>
 
-  <!-- SERVICES -->
+  <!-- SERVICES: 2x2 bento -->
   <Section tone="base">
-    <SectionHeader eyebrow="What we offer" title="Services built around your workflow" />
+    <SectionHeader number="02" eyebrow="What we offer" title="Services built around your workflow" />
     <div class="mt-12 grid gap-5 sm:grid-cols-2">
       {services.map((s, i) => (
-        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 shadow-soft" style={`--reveal-delay:${i * 70}ms`}>
-          <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name={s.icon} size={24} /></span>
-          <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold">{s.title}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-muted">{s.body}</p>
+        <div class="spotlight reveal flex flex-col rounded-[var(--radius)] border border-line bg-surface p-7 transition-[border-color,box-shadow] duration-[var(--dur-base)] hover:border-line-strong hover:shadow-soft md:p-9" style={`--reveal-delay:${(i % 2) * 70}ms`}>
+          <div class="flex items-start justify-between">
+            <span class="font-mono text-sm text-muted">{String(i + 1).padStart(2, '0')}</span>
+            <span class="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-line text-ink-soft"><Icon name={s.icon} size={20} /></span>
+          </div>
+          <h3 class="mt-10 text-[length:var(--text-h3)]">{s.title}</h3>
+          <p class="mt-2 max-w-md text-sm leading-relaxed text-muted">{s.body}</p>
         </div>
       ))}
     </div>
   </Section>
 
   <!-- CAPABILITIES -->
-  <Section tone="ink" contain={false}>
-    <div class="container-x">
-      <SectionHeader eyebrow="Capabilities" title="What we bring to the table" invert />
-      <div class="mt-10 flex flex-wrap gap-3">
-        {capabilities.map((c, i) => (
-          <span class="reveal inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#221a16] px-4 py-2 text-sm text-[#e6dbd4]" style={`--reveal-delay:${i * 40}ms`}>
-            <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>{c}
-          </span>
-        ))}
+  <Section tone="ink">
+    <div class="grid gap-10 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-4">
+        <SectionHeader number="03" eyebrow="Capabilities" title="What we bring to the table" invert />
       </div>
+      <ul class="flex flex-wrap content-start gap-3 lg:col-span-8">
+        {capabilities.map((c, i) => (
+          <li class="reveal inline-flex items-center gap-2 rounded-full border border-white/10 bg-ink-2 px-4 py-2.5 text-sm text-on-ink" style={`--reveal-delay:${i * 40}ms`}>
+            <span class="h-1.5 w-1.5 rounded-full bg-accent"></span>{c}
+          </li>
+        ))}
+      </ul>
     </div>
   </Section>
 
-  <!-- HOW WE WORK -->
+  <!-- HOW WE WORK: connected steps -->
   <Section tone="surface">
-    <SectionHeader eyebrow="How we work" title="A deliberate, four-step approach" />
-    <div class="mt-12 grid gap-6 md:grid-cols-4">
+    <SectionHeader number="04" eyebrow="How we work" title="A deliberate, four-step approach" />
+    <ol class="work-steps reveal relative mt-14 grid gap-10 md:grid-cols-4 md:gap-6">
+      <span class="work-line" aria-hidden="true"></span>
       {steps.map((s, i) => (
-        <div class="reveal" style={`--reveal-delay:${i * 70}ms`}>
-          <div class="font-display text-3xl font-semibold text-accent">{s.n}</div>
-          <div class="mt-3 h-px w-full bg-line"></div>
-          <h3 class="mt-4 font-semibold">{s.t}</h3>
-          <p class="mt-1.5 text-sm leading-relaxed text-muted">{s.d}</p>
-        </div>
+        <li class="relative pl-10 md:pl-0 md:pt-10" style={`--i:${i}`}>
+          <span class="work-dot" aria-hidden="true"></span>
+          <span class="font-mono text-sm text-accent">{s.n}</span>
+          <h3 class="mt-3 text-[length:var(--text-h3)]">{s.t}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{s.d}</p>
+        </li>
       ))}
-    </div>
+    </ol>
   </Section>
 
-  <!-- USE CASES -->
+  <!-- USE CASES: 5/7 -->
   <Section tone="base">
-    <SectionHeader eyebrow="Use cases" title="Who this is for" />
-    <div class="mt-12 grid gap-5 md:grid-cols-3">
-      {useCases.map((u, i) => (
-        <div class="reveal rounded-[var(--radius)] border border-line bg-surface p-7 shadow-soft" style={`--reveal-delay:${i * 70}ms`}>
-          <h3 class="text-[length:var(--text-h3)] font-semibold">{u.t}</h3>
-          <p class="mt-2 text-sm leading-relaxed text-muted">{u.d}</p>
-        </div>
-      ))}
+    <div class="grid gap-12 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-5">
+        <SectionHeader number="05" eyebrow="Use cases" title="Who this is for" intro="Teams whose work runs through documents — and who would rather it ran itself." />
+      </div>
+      <ul class="lg:col-span-7">
+        {useCases.map((u, i) => (
+          <li class="reveal flex items-start justify-between gap-6 border-t border-line-strong py-7 last:border-b" style={`--reveal-delay:${i * 60}ms`}>
+            <div>
+              <h3 class="text-[length:var(--text-h3)]">{u.t}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">{u.d}</p>
+            </div>
+            <Icon name="arrowUpRight" size={20} class="mt-1 shrink-0 text-muted" />
+          </li>
+        ))}
+      </ul>
     </div>
   </Section>
 
   <!-- PROOF -->
   <Section tone="surface">
-    <SectionHeader eyebrow="Proof" title="Grounded in real usage" intro="Our products already support work at scale. Service outcomes and case studies are pending verified figures." align="center" />
+    <SectionHeader number="06" eyebrow="Proof" title="Grounded in real usage" intro="The same principles behind our services already power products used by people around the world." />
     <div class="mt-12"><StatBand /></div>
   </Section>
 
   <CtaSection title="Have a workflow worth automating?" intro="Tell us where the repetitive work is. We’ll help you design it away." />
 </Base>
+
+<style>
+  /* Connector line draws when the list is revealed: horizontal on md+, vertical on mobile */
+  .work-line {
+    position: absolute;
+    left: 0.3125rem; top: 0.5rem; bottom: 0.5rem; width: 1px;
+    background: var(--color-accent);
+    transform-origin: top;
+    transition: transform 1000ms var(--ease-in-out) 150ms;
+  }
+  .work-dot {
+    position: absolute;
+    left: 0; top: 0.35rem;
+    width: 11px; height: 11px; border-radius: 999px;
+    border: 1px solid var(--color-accent); background: var(--color-surface-2);
+    transition: background-color 300ms var(--ease-out);
+    transition-delay: calc(250ms + var(--i) * 220ms);
+  }
+  @media (min-width: 768px) {
+    .work-line { left: 0; right: 0; top: 0.3125rem; bottom: auto; width: auto; height: 1px; transform-origin: left; }
+    .work-dot { top: 0; }
+  }
+  :global(html.js) .work-steps:not(:global(.is-visible)) .work-line { transform: scaleY(0); }
+  @media (min-width: 768px) {
+    :global(html.js) .work-steps:not(:global(.is-visible)) .work-line { transform: scaleX(0); }
+  }
+  .work-steps:global(.is-visible) .work-dot, :global(html:not(.js)) .work-dot { background: var(--color-accent); }
+</style>

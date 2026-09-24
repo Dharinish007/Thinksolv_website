@@ -2,62 +2,101 @@
 import { getCollection } from 'astro:content';
 import Base from '@/layouts/Base.astro';
 import Section from '@/components/Section.astro';
-import SectionHeader from '@/components/SectionHeader.astro';
+import PageHero from '@/components/PageHero.astro';
 import ProductCard from '@/components/ProductCard.astro';
+import ProductMock from '@/components/ProductMock.astro';
 import CtaSection from '@/components/CtaSection.astro';
 import Button from '@/components/Button.astro';
 import Icon from '@/components/Icon.astro';
 
 const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
 const categories = ['All', ...Array.from(new Set(products.map((p) => p.data.category)))];
+const countFor = (c: string) => (c === 'All' ? products.length : products.filter((p) => p.data.category === c).length);
 const featured = products.find((p) => p.data.featured) ?? products[0];
----
-<Base title="Products" description="Focused Chrome extensions and Google Workspace add-ons for document conversion and automation.">
-  <!-- HERO -->
-  <section class="relative overflow-hidden pt-36 pb-16 md:pt-44">
-    <div class="grid-motif pointer-events-none absolute inset-0 -z-10"></div>
-    <div class="container-x max-w-3xl">
-      <p class="reveal mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-accent">Products</p>
-      <h1 class="reveal text-[length:var(--text-h1)] font-semibold leading-[1.05]">Small tools that remove real work.</h1>
-      <p class="reveal mt-5 max-w-xl text-lg leading-relaxed text-muted" style="--reveal-delay:80ms">
-        Every product is built for people who work daily in Docs, Sheets and Drive — designed to stay out of the way and just work.
-      </p>
-    </div>
-  </section>
 
-  <!-- ECOSYSTEM -->
-  <Section tone="surface" class="!py-12">
-    <div class="reveal grid gap-5 md:grid-cols-2">
-      {[
-        { icon: 'workspace', t: 'Google Workspace', d: 'Add-ons that run natively inside Docs, Sheets and Drive — nothing leaves your account.' },
-        { icon: 'chrome', t: 'Chrome platform', d: 'Extensions that bring document tools directly into the browser you already use.' },
-      ].map((e) => (
-        <div class="flex items-start gap-4 rounded-[var(--radius)] border border-line bg-surface p-6">
-          <span class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-accent-soft text-accent"><Icon name={e.icon} size={24} /></span>
-          <div>
-            <h2 class="text-[length:var(--text-h3)] font-semibold">{e.t}</h2>
-            <p class="mt-1.5 text-sm leading-relaxed text-muted">{e.d}</p>
+// Platform badges come from the collection itself — no platform is shown that has no product.
+const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map((pl) => ({
+  label: pl,
+  icon: pl === 'Chrome Extension' ? 'chrome' : 'workspace',
+  count: products.filter((p) => p.data.platform === pl).length,
+}));
+---
+<Base title="Products" description="Focused Google Workspace add-ons for document conversion and automation.">
+  <PageHero
+    eyebrow="Products"
+    lines={['Small tools that', 'remove real work.']}
+    accentLast
+    intro="Every product is built for people who work daily in Docs, Sheets and Drive — designed to stay out of the way and just work."
+    layout="7/5"
+  >
+    <div slot="aside" class="grid gap-3">
+      {platforms.map((pl) => (
+        <div class="flex items-center gap-4 rounded-[var(--radius)] border border-line bg-surface p-5">
+          <span class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-line text-ink-soft"><Icon name={pl.icon} size={22} /></span>
+          <div class="flex-1">
+            <p class="font-medium text-ink">{pl.label}</p>
+            <p class="text-sm text-muted">Runs natively inside Docs, Sheets and Drive</p>
           </div>
+          <span class="font-display text-3xl font-medium tabular-nums text-ink">{pl.count}</span>
         </div>
       ))}
+      <div class="flex items-center justify-between gap-4 rounded-[var(--radius)] border border-line bg-surface-2 px-5 py-4 text-sm">
+        <span class="meta text-muted">Categories</span>
+        <span class="text-ink-soft">{categories.slice(1).join(' · ')}</span>
+      </div>
     </div>
-  </Section>
+  </PageHero>
 
-  <!-- CATEGORIES + ALL PRODUCTS -->
+  <!-- FEATURED -->
+  {featured && (
+    <Section tone="ink">
+      <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+        <div class="reveal lg:col-span-5">
+          <p class="meta mb-6 text-on-ink-muted">01 — Featured product</p>
+          <h2 class="text-[length:var(--text-h1)] leading-[1.04] text-on-ink">{featured.data.name}</h2>
+          <p class="mt-5 text-[length:var(--text-lead)] leading-relaxed text-on-ink-muted">{featured.data.tagline}</p>
+          <ul class="mt-8 space-y-3 border-t border-white/10 pt-6">
+            {featured.data.features.slice(0, 3).map((f) => (
+              <li class="flex items-start gap-3 text-sm text-on-ink-muted">
+                <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
+                <span><strong class="font-medium text-on-ink">{f.title}.</strong> {f.body}</span>
+              </li>
+            ))}
+          </ul>
+          <div class="mt-9"><Button href={`/products/${featured.id}`}>Explore {featured.data.name}</Button></div>
+        </div>
+        <div class="reveal lg:col-span-6 lg:col-start-7" style="--reveal-delay:100ms">
+          <div class="rounded-[var(--radius-panel)] border border-white/10 bg-ink-2 p-6 md:p-10">
+            <ProductMock product={featured} class="shadow-lift" />
+          </div>
+        </div>
+      </div>
+    </Section>
+  )}
+
+  <!-- ALL PRODUCTS + FILTER -->
   <Section tone="base">
-    <SectionHeader eyebrow="All products" title="Browse the ecosystem" />
-    <div class="reveal mt-8 flex flex-wrap gap-2" role="tablist" aria-label="Filter products by category">
-      {categories.map((c, i) => (
-        <button
-          type="button"
-          role="tab"
-          class="filter-pill rounded-full border border-line px-4 py-2 text-sm font-medium text-ink-soft transition-colors hover:border-accent/40 aria-selected:border-accent aria-selected:bg-accent aria-selected:text-white"
-          data-filter={c}
-          aria-selected={i === 0 ? 'true' : 'false'}
-        >{c}</button>
-      ))}
+    <div class="reveal flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+      <div>
+        <p class="meta mb-4 text-muted">02 — All products</p>
+        <h2 class="text-[length:var(--text-h2)] leading-[1.08]">Browse the ecosystem</h2>
+      </div>
+      <div class="relative inline-flex max-w-full self-start overflow-x-auto rounded-full border border-line bg-surface p-1 [scrollbar-width:none] md:self-auto" role="group" aria-label="Filter products by category" data-filter-group>
+        <span class="pointer-events-none absolute left-0 top-1 h-[calc(100%-0.5rem)] rounded-full bg-accent transition-[transform,width] duration-[var(--dur-base)] ease-in-out" aria-hidden="true" data-filter-pill></span>
+        {categories.map((c, i) => (
+          <button
+            type="button"
+            class="filter-btn relative z-10 inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium text-ink-soft transition-colors duration-[var(--dur-base)] aria-pressed:text-white sm:px-4"
+            data-filter={c}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            aria-label={`${c} (${countFor(c)} products)`}
+          >{c}<span class="font-mono text-[0.7rem] opacity-60" aria-hidden="true">{countFor(c)}</span></button>
+        ))}
+      </div>
     </div>
-    <div id="product-grid" class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <p class="sr-only" role="status" aria-live="polite" data-filter-status></p>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3" data-product-grid>
       {products.map((p) => (
         <div class="product-item" data-category={p.data.category}>
           <ProductCard product={p} />
@@ -66,51 +105,72 @@ const featured = products.find((p) => p.data.featured) ?? products[0];
     </div>
   </Section>
 
-  <!-- FEATURED -->
-  {featured && (
-    <Section tone="ink" contain={false}>
-      <div class="container-x">
-        <div class="grid items-center gap-10 md:grid-cols-2">
-          <div class="reveal">
-            <p class="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-accent"><span class="h-1 w-1 rounded-full bg-accent"></span>Featured product</p>
-            <h2 class="text-[length:var(--text-h2)] font-semibold text-[#f6efec]">{featured.data.name}</h2>
-            <p class="mt-4 text-lg leading-relaxed text-[#c6b8b0]">{featured.data.tagline}</p>
-            <p class="mt-3 text-sm leading-relaxed text-[#a99b93]">{featured.data.summary}</p>
-            <div class="mt-7"><Button href={`/products/${featured.id}`} variant="primary">Explore {featured.data.name}</Button></div>
-          </div>
-          <div class="reveal rounded-[calc(var(--radius)*1.2)] border border-white/10 bg-[#221a16] p-8">
-            <span class="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-accent/15 text-accent"><Icon name={featured.data.icon} size={28} /></span>
-            <ul class="mt-6 space-y-3">
-              {featured.data.features.slice(0, 4).map((f) => (
-                <li class="flex items-start gap-3 text-sm text-[#d9cdc6]">
-                  <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
-                  <span><strong class="font-semibold text-[#f3ece8]">{f.title}.</strong> {f.body}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-    </Section>
-  )}
-
   <CtaSection title="Not sure which tool fits?" intro="Tell us your workflow and we’ll point you to the right product — or build what’s missing." />
 </Base>
 
 <script>
-  // Re-bind on every ClientRouter navigation
+  // Segmented filter with FLIP reordering. Re-binds on every ClientRouter navigation.
+  const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
   document.addEventListener('astro:page-load', () => {
-    const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
-    const items = document.querySelectorAll<HTMLElement>('.product-item');
-    pills.forEach((pill) => {
-      pill.addEventListener('click', () => {
-        const filter = pill.dataset.filter;
-        pills.forEach((p) => p.setAttribute('aria-selected', String(p === pill)));
-        items.forEach((item) => {
-          const show = filter === 'All' || item.dataset.category === filter;
-          item.style.display = show ? '' : 'none';
-        });
+    const group = document.querySelector<HTMLElement>('[data-filter-group]');
+    if (!group) return;
+    const pill = group.querySelector<HTMLElement>('[data-filter-pill]')!;
+    const buttons = Array.from(group.querySelectorAll<HTMLButtonElement>('.filter-btn'));
+    const items = Array.from(document.querySelectorAll<HTMLElement>('.product-item'));
+    const status = document.querySelector<HTMLElement>('[data-filter-status]');
+    let running = 0;
+
+    const placePill = (btn: HTMLElement, animate = true) => {
+      if (!animate) pill.style.transition = 'none';
+      pill.style.width = `${btn.offsetWidth}px`;
+      pill.style.transform = `translateX(${btn.offsetLeft}px)`;
+      if (!animate) { pill.offsetWidth; pill.style.transition = ''; }
+    };
+    placePill(buttons.find((b) => b.getAttribute('aria-pressed') === 'true') ?? buttons[0], false);
+
+    const apply = async (filter: string) => {
+      const token = ++running;
+      items.forEach((el) => el.getAnimations().forEach((a) => a.cancel())); // interrupt a previous run cleanly
+      const shouldShow = (el: HTMLElement) => filter === 'All' || el.dataset.category === filter;
+      const leaving = items.filter((el) => !el.hidden && !shouldShow(el));
+      const entering = items.filter((el) => el.hidden && shouldShow(el));
+      const staying = items.filter((el) => !el.hidden && shouldShow(el));
+      const count = items.filter(shouldShow).length;
+      if (status) status.textContent = `Showing ${count} ${count === 1 ? 'product' : 'products'}${filter === 'All' ? '' : ` in ${filter}`}`;
+
+      if (reduce()) {
+        leaving.forEach((el) => (el.hidden = true));
+        entering.forEach((el) => { el.hidden = false; el.querySelector('.reveal')?.classList.add('is-visible'); });
+        return;
+      }
+
+      // 1. fade/scale out removed items. Never block on .finished alone: a tab that isn't rendering
+      //    frames never resolves it, so a timer guarantees the filter always completes.
+      leaving.forEach((el) => el.animate([{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'scale(0.97)' }], { duration: 160, easing: EASE, fill: 'forwards' }));
+      await new Promise((r) => setTimeout(r, leaving.length ? 170 : 0));
+      if (token !== running) return;
+
+      // 2. FLIP: measure, swap visibility, invert, play
+      const first = new Map(staying.map((el) => [el, el.getBoundingClientRect()]));
+      leaving.forEach((el) => { el.hidden = true; el.getAnimations().forEach((a) => a.cancel()); });
+      entering.forEach((el) => { el.hidden = false; el.querySelector('.reveal')?.classList.add('is-visible'); });
+      staying.forEach((el) => {
+        const a = first.get(el)!, b = el.getBoundingClientRect();
+        const dx = a.left - b.left, dy = a.top - b.top;
+        if (dx || dy) el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 320, easing: EASE });
       });
-    });
+      entering.forEach((el, i) =>
+        el.animate([{ opacity: 0, transform: 'scale(0.97)' }, { opacity: 1, transform: 'none' }], { duration: 260, delay: 80 + i * 40, easing: EASE, fill: 'backwards' }),
+      );
+    };
+
+    buttons.forEach((btn) => btn.addEventListener('click', () => {
+      if (btn.getAttribute('aria-pressed') === 'true') return;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      placePill(btn);
+      apply(btn.dataset.filter || 'All');
+    }));
   });
 </script>
