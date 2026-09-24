@@ -6,7 +6,9 @@ const finePointer = () => matchMedia('(hover: hover) and (pointer: fine)').match
 let cleanups: (() => void)[] = [];
 
 // ClientRouter replaces <html> attributes on swap — restore the JS flag before paint.
-document.addEventListener('astro:after-swap', () => document.documentElement.classList.add('js'));
+// `via-router` marks client-side navigations: elements that a view transition carries in
+// (e.g. the product title) must not also play their own entrance.
+document.addEventListener('astro:after-swap', () => document.documentElement.classList.add('js', 'via-router'));
 document.addEventListener('astro:before-swap', () => { cleanups.forEach((fn) => fn()); cleanups = []; });
 
 /* ---------------- Scroll reveal ---------------- */
@@ -39,18 +41,13 @@ function initCounters() {
     };
     requestAnimationFrame(tick);
   };
-  // The final value stays in place until the number starts entering view; it resets to 0 there
-  // and counts up at 60% visibility — so captures, print or skipped sections never show "0".
+  // The final value stays in place until the number enters view, then counts up from 0 at once —
+  // so captures, print, skipped sections or a number peeking above the fold never sit at "0".
   const io = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
-      const el = e.target as HTMLElement;
-      if (e.intersectionRatio >= 0.6) { run(el); io.unobserve(el); }
-      else if (e.isIntersecting && !reduce() && !el.dataset.primed) {
-        el.dataset.primed = '1';
-        el.textContent = '0' + (el.dataset.suffix || '');
-      }
+      if (e.isIntersecting) { run(e.target as HTMLElement); io.unobserve(e.target); }
     });
-  }, { threshold: [0, 0.6] });
+  });
   counters.forEach((c) => io.observe(c));
   cleanups.push(() => io.disconnect());
 }
@@ -94,7 +91,7 @@ function playIntro() {
     setTimeout(() => {
       scene?.classList.add('is-settled');
       document.dispatchEvent(new CustomEvent('ts:hero-done'));
-    }, reduce() ? 0 : 2400);
+    }, reduce() ? 0 : 1900);
   }
 }
 

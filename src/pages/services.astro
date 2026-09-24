@@ -112,7 +112,7 @@ const useCases = [
       {steps.map((s, i) => (
         <li class="relative pl-10 md:pl-0 md:pt-10" style={`--i:${i}`}>
           <span class="work-dot" aria-hidden="true"></span>
-          <span class="font-mono text-sm text-accent">{s.n}</span>
+          <span class="font-mono text-sm text-accent-ink">{s.n}</span>
           <h3 class="mt-3 text-[length:var(--text-h3)]">{s.t}</h3>
           <p class="mt-2 text-sm leading-relaxed text-muted">{s.d}</p>
         </li>
@@ -133,7 +133,6 @@ const useCases = [
               <h3 class="text-[length:var(--text-h3)]">{u.t}</h3>
               <p class="mt-2 text-sm leading-relaxed text-muted">{u.d}</p>
             </div>
-            <Icon name="arrowUpRight" size={20} class="mt-1 shrink-0 text-muted" />
           </li>
         ))}
       </ul>

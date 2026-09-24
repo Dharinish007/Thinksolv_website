@@ -82,15 +82,15 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
         <h2 class="text-[length:var(--text-h2)] leading-[1.08]">Browse the ecosystem</h2>
       </div>
       <div class="relative inline-flex max-w-full self-start overflow-x-auto rounded-full border border-line bg-surface p-1 [scrollbar-width:none] md:self-auto" role="group" aria-label="Filter products by category" data-filter-group>
-        <span class="pointer-events-none absolute left-0 top-1 h-[calc(100%-0.5rem)] rounded-full bg-accent transition-[transform,width] duration-[var(--dur-base)] ease-in-out" aria-hidden="true" data-filter-pill></span>
+        <span class="pointer-events-none absolute left-0 top-1 h-[calc(100%-0.5rem)] rounded-full bg-accent-strong transition-[transform,width] duration-[var(--dur-base)] ease-in-out" aria-hidden="true" data-filter-pill></span>
         {categories.map((c, i) => (
           <button
             type="button"
-            class="filter-btn relative z-10 inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-medium text-ink-soft transition-colors duration-[var(--dur-base)] aria-pressed:text-white sm:px-4"
+            class="filter-btn relative z-10 inline-flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-2 text-sm font-medium text-ink-soft transition-colors duration-[var(--dur-base)] aria-pressed:text-white sm:px-4"
             data-filter={c}
             aria-pressed={i === 0 ? 'true' : 'false'}
             aria-label={`${c} (${countFor(c)} products)`}
-          >{c}<span class="font-mono text-[0.7rem] opacity-60" aria-hidden="true">{countFor(c)}</span></button>
+          ><span class="hidden sm:inline">{c}</span><span class="sm:hidden" aria-hidden="true">{c.split(' ').at(-1)}</span><span class="font-mono text-[0.7rem] opacity-60" aria-hidden="true">{countFor(c)}</span></button>
         ))}
       </div>
     </div>
@@ -105,7 +105,7 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
     </div>
   </Section>
 
-  <CtaSection title="Not sure which tool fits?" intro="Tell us your workflow and we’ll point you to the right product — or build what’s missing." />
+  <CtaSection title="Not sure which tool fits?" intro="Tell us your workflow and we’ll point you to the right product — or build what’s missing." secondary={{ label: 'Explore services', href: '/services' }} />
 </Base>
 
 <script>
@@ -128,7 +128,12 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
       pill.style.transform = `translateX(${btn.offsetLeft}px)`;
       if (!animate) { pill.offsetWidth; pill.style.transition = ''; }
     };
-    placePill(buttons.find((b) => b.getAttribute('aria-pressed') === 'true') ?? buttons[0], false);
+    const activeBtn = () => buttons.find((b) => b.getAttribute('aria-pressed') === 'true') ?? buttons[0];
+    placePill(activeBtn(), false);
+    // Labels change length at the sm breakpoint — keep the pill under the active button
+    const onResize = () => placePill(activeBtn(), false);
+    window.addEventListener('resize', onResize, { passive: true });
+    document.addEventListener('astro:before-swap', () => window.removeEventListener('resize', onResize), { once: true });
 
     const apply = async (filter: string) => {
       const token = ++running;

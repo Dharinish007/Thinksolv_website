@@ -1,46 +1,93 @@
 ---
-// StepStory visual for a product's "How it works": input → configure → output, labelled with the
-// product's own step title. Decorative; rendered into StepStory's v0/v1/v2 slots.
+// StepStory visual for a product's "How it works". The visual type is chosen from the step's own
+// title, and every label comes from the product's content (step titles, feature titles, icon):
+//   connect → source ↔ destination · select/pick/add/folder → input list · choose/set → settings
+//   (rows = the product's feature titles) · write/open/edit → document · anything else → output.
 import Icon from './Icon.astro';
-interface Props { step: number; title: string; icon: string }
-const { step, title, icon } = Astro.props;
-const kind = step % 3;
+import type { CollectionEntry } from 'astro:content';
+interface Props { step: number; product: CollectionEntry<'products'> }
+const { step, product } = Astro.props;
+const { data } = product;
+const s = data.howItWorks[step];
+const t = s.title.toLowerCase();
+
+const kind =
+  /connect/.test(t) ? 'connect'
+  : /select|pick|add|folder/.test(t) ? 'input'
+  : /choose|set /.test(`${t} `) ? 'settings'
+  : /write|open|edit/.test(t) ? 'doc'
+  : 'output';
+
+const pdfInput = /pdf/.test(t);          // e.g. "Add a PDF"
+const folderInput = /folder/.test(t);    // e.g. "Select a folder"
+const inputs = pdfInput ? ['report.pdf'] : ['Quarterly report', 'Client proposal', 'Meeting notes', 'Roadmap'];
+const destination = s.title.replace(/^connect\s+/i, '') || 'Destination';
+const settings = data.features.slice(0, 3).map((f) => f.title);
 ---
 <div class="w-full max-w-[20rem]">
-  <p class="meta mb-4 text-center text-muted">{String(step + 1).padStart(2, '0')} · {title}</p>
-  {kind === 0 && (
+  <p class="meta mb-4 text-center text-muted">{String(step + 1).padStart(2, '0')} · {s.title}</p>
+
+  {kind === 'connect' && (
+    <div class="flex items-center justify-between gap-3 rounded-xl border border-line bg-surface p-6 shadow-soft">
+      <span class="flex flex-col items-center gap-2 text-xs text-muted"><span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-line text-ink-soft"><Icon name="doc" size={22} /></span>Google Docs</span>
+      <span class="relative h-px flex-1 border-t border-dashed border-line-strong">
+        <span class="absolute left-1/2 top-1/2 inline-flex h-6 w-6 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-accent text-white"><Icon name="check" size={13} /></span>
+      </span>
+      <span class="flex flex-col items-center gap-2 text-xs text-muted"><span class="inline-flex h-12 w-12 items-center justify-center rounded-xl border border-line text-ink-soft"><Icon name={data.icon} size={22} /></span>{destination}</span>
+    </div>
+  )}
+
+  {kind === 'input' && (
     <div class="rounded-xl border border-line bg-surface p-4 shadow-soft">
-      {['Quarterly report', 'Client proposal', 'Meeting notes', 'Roadmap'].map((d, i) => (
-        <div class:list={['flex items-center gap-3 rounded-lg px-2 py-2 text-xs text-ink-soft', i === 1 && 'bg-surface-2']}>
-          <span class:list={['inline-flex h-4 w-4 items-center justify-center rounded border', i < 2 ? 'border-accent bg-accent text-white' : 'border-line-strong']}>{i < 2 && <Icon name="check" size={11} />}</span>
-          <Icon name="doc" size={14} class="text-muted" />{d}
+      {folderInput && (
+        <div class="mb-2 flex items-center gap-2 border-b border-line px-2 pb-3 text-xs font-medium text-ink"><Icon name="layers" size={14} class="text-accent" />Drive folder<span class="ml-auto font-mono text-[0.65rem] text-muted">all files</span></div>
+      )}
+      {inputs.map((d, i) => (
+        <div class:list={['flex items-center gap-3 rounded-lg px-2 py-2 text-xs text-ink-soft', i === 0 && 'bg-surface-2']}>
+          <span class:list={['inline-flex h-4 w-4 items-center justify-center rounded border', (folderInput || pdfInput || i < 2) ? 'border-accent bg-accent text-white' : 'border-line-strong']}>
+            {(folderInput || pdfInput || i < 2) && <Icon name="check" size={11} />}
+          </span>
+          <Icon name={pdfInput ? 'pdf' : 'doc'} size={14} class="text-muted" />{d}
         </div>
       ))}
     </div>
   )}
-  {kind === 1 && (
+
+  {kind === 'settings' && (
     <div class="space-y-3 rounded-xl border border-line bg-surface p-5 shadow-soft">
-      {[['Output', 'Drive folder'], ['Naming', 'Title + date'], ['Formatting', 'Preserve']].map(([k, v], i) => (
+      {settings.map((label) => (
         <div class="flex items-center justify-between gap-4 text-xs">
-          <span class="text-muted">{k}</span>
-          <span class="flex items-center gap-2 text-ink-soft">{v}
-            <span class:list={['relative inline-block h-4 w-7 rounded-full', i === 2 ? 'bg-accent' : 'bg-line-strong']}>
-              <span class:list={['absolute top-0.5 h-3 w-3 rounded-full bg-white', i === 2 ? 'right-0.5' : 'left-0.5']}></span>
-            </span>
-          </span>
+          <span class="text-ink-soft">{label}</span>
+          <span class="relative inline-block h-4 w-7 shrink-0 rounded-full bg-accent"><span class="absolute right-0.5 top-0.5 h-3 w-3 rounded-full bg-white"></span></span>
         </div>
       ))}
       <div class="h-px bg-line"></div>
-      <div class="flex justify-end"><span class="rounded-full bg-ink px-3 py-1 text-[0.7rem] text-on-ink">Continue</span></div>
+      <div class="flex justify-end"><span class="rounded-full bg-ink px-3 py-1 text-[0.7rem] text-on-ink">{data.howItWorks[step + 1]?.title ?? 'Continue'}</span></div>
     </div>
   )}
-  {kind === 2 && (
+
+  {kind === 'doc' && (
+    <div class="rounded-xl border border-line bg-surface p-5 shadow-soft">
+      <div class="mb-4 flex items-center gap-2 border-b border-line pb-3 text-xs text-muted"><Icon name="doc" size={14} class="text-accent" />Google Docs</div>
+      <div class="space-y-2.5">
+        <span class="block h-2.5 w-2/3 rounded-full bg-line-strong"></span>
+        <span class="block h-1.5 w-full rounded-full bg-line"></span>
+        <span class="block h-1.5 w-11/12 rounded-full bg-line"></span>
+        <span class="flex items-center gap-0.5"><span class="block h-1.5 w-1/2 rounded-full bg-line"></span><span class="block h-3 w-px bg-accent"></span></span>
+      </div>
+    </div>
+  )}
+
+  {kind === 'output' && (
     <div class="relative">
       <div class="absolute inset-0 translate-x-3 -translate-y-3 rounded-xl border border-line bg-surface-2"></div>
       <div class="relative rounded-xl border border-line bg-surface p-5 shadow-soft">
         <div class="flex items-center gap-3">
-          <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink-soft"><Icon name={icon} size={18} /></span>
-          <div class="flex-1 space-y-1.5"><span class="block h-2 w-2/3 rounded-full bg-line-strong"></span><span class="block h-1.5 w-1/3 rounded-full bg-line"></span></div>
+          <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line text-ink-soft"><Icon name={data.icon} size={18} /></span>
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-xs font-medium text-ink">{data.name}</p>
+            <p class="font-mono text-[0.65rem] text-muted">{s.title}</p>
+          </div>
           <span class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-accent text-white"><Icon name="check" size={14} /></span>
         </div>
         <div class="mt-4 space-y-2"><span class="block h-1.5 w-full rounded-full bg-line"></span><span class="block h-1.5 w-5/6 rounded-full bg-line"></span><span class="block h-1.5 w-4/6 rounded-full bg-line"></span></div>

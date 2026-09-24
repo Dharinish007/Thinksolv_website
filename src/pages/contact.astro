@@ -68,12 +68,12 @@ const field =
           <div>
             <label for="name" class="mb-2 block text-sm font-medium text-ink">Full name</label>
             <input id="name" name="name" type="text" required autocomplete="name" class={field} />
-            <p data-error="name" class="mt-1.5 hidden text-sm text-accent">Please enter your name.</p>
+            <p data-error="name" class="mt-1.5 hidden text-sm text-accent-ink">Please enter your name.</p>
           </div>
           <div>
             <label for="email" class="mb-2 block text-sm font-medium text-ink">Email address</label>
             <input id="email" name="email" type="email" required autocomplete="email" class={field} />
-            <p data-error="email" class="mt-1.5 hidden text-sm text-accent">Please enter a valid email.</p>
+            <p data-error="email" class="mt-1.5 hidden text-sm text-accent-ink">Please enter a valid email.</p>
           </div>
           <div class="sm:col-span-2">
             <label for="subject" class="mb-2 block text-sm font-medium text-ink">Subject <span class="font-normal text-muted">(optional)</span></label>
@@ -82,13 +82,13 @@ const field =
           <div class="sm:col-span-2">
             <label for="message" class="mb-2 block text-sm font-medium text-ink">Message</label>
             <textarea id="message" name="message" rows="6" required class:list={[field, 'resize-y']}></textarea>
-            <p data-error="message" class="mt-1.5 hidden text-sm text-accent">Please add a short message.</p>
+            <p data-error="message" class="mt-1.5 hidden text-sm text-accent-ink">Please add a short message.</p>
           </div>
         </div>
         <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p id="form-status" role="status" aria-live="polite" class="text-sm text-muted"></p>
           <button type="submit"
-            class="group inline-flex items-center justify-center gap-2 rounded-full bg-accent px-6 py-3 text-sm font-medium text-white shadow-soft transition-[background-color,scale] duration-[var(--dur-base)] hover:bg-accent-hover active:scale-[0.98] sm:order-2">
+            class="group inline-flex items-center justify-center gap-2 rounded-full bg-accent-strong px-6 py-3 text-sm font-medium text-white shadow-soft transition-[background-color,scale] duration-[var(--dur-base)] hover:bg-accent-hover active:scale-[0.98] sm:order-2">
             Send message<Icon name="arrow" size={16} class="transition-transform duration-[var(--dur-base)] group-hover:translate-x-0.5" />
           </button>
         </div>
@@ -105,7 +105,7 @@ const field =
     </dl>
   </Section>
 
-  <CtaSection title="Prefer to just start a conversation?" intro="Email us directly — a real person on the team will reply." />
+  <CtaSection title="Prefer to just start a conversation?" intro="Email us directly — a real person on the team will reply." primary={{ label: 'Email us', href: `mailto:${site.email}` }} />
 </Base>
 
 <script>

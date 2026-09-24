@@ -4,10 +4,14 @@ import Button from './Button.astro';
 interface Props {
   title?: string;
   intro?: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string };
 }
 const {
   title = 'Let’s build something that stays out of the way.',
   intro = 'Tell us what slows your team down. We’ll help you remove the work before it reaches anyone.',
+  primary = cta.primary,
+  secondary = cta.secondary,
 } = Astro.props;
 ---
 <section class="cta-band relative isolate overflow-hidden bg-ink py-[var(--section-y)] text-on-ink" data-cta>
@@ -21,8 +25,8 @@ const {
       <div class="reveal lg:col-span-4" style="--reveal-delay:100ms">
         <p class="text-base leading-relaxed text-on-ink-muted md:text-lg">{intro}</p>
         <div class="mt-8 flex flex-wrap items-center gap-3">
-          <Button href={cta.primary.href} variant="primary">{cta.primary.label}</Button>
-          <Button href={cta.secondary.href} variant="secondary" onInk>{cta.secondary.label}</Button>
+          <Button href={primary.href} variant="primary" icon={primary.href.startsWith('mailto:') ? 'mail' : 'arrow'}>{primary.label}</Button>
+          <Button href={secondary.href} variant="secondary" onInk>{secondary.label}</Button>
         </div>
       </div>
     </div>

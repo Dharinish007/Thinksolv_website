@@ -10,6 +10,9 @@ import { values, timeline, metrics, site } from '@/data/site';
 // Only verified timeline entries render publicly.
 const milestones = timeline.filter((t) => !('confirm' in t && t.confirm));
 const teamSize = metrics.find((m) => m.label === 'People on the team' && !m.confirm)?.value;
+// Small counts read better as words in running copy ("seven people", not "7 people").
+const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+const teamWord = teamSize != null ? (words[teamSize] ?? String(teamSize)) : undefined;
 
 // Functions are known; individual names/photos are not public yet, so none are shown.
 const disciplines = [
@@ -23,7 +26,7 @@ const disciplines = [
     eyebrow="About"
     lines={['A small team with', 'a long-term view.']}
     accentLast
-    intro={`ThinkSolv began in ${site.founded} as a one-person company. Today we’re ${teamSize ?? 'a small team of'} people building software designed to stay out of the way — and last.`}
+    intro={`ThinkSolv began in ${site.founded} as a one-person company. Today we’re a team of ${teamWord ?? 'several'}, building software designed to stay out of the way — and last.`}
   />
 
   <!-- WHO WE ARE: 5/7 -->
@@ -85,7 +88,7 @@ const disciplines = [
         {milestones.map((t, i) => (
           <li class="reveal relative pb-14 pl-12 last:pb-0" style={`--reveal-delay:${i * 60}ms`}>
             <span class="tl-dot" aria-hidden="true"></span>
-            <div class="font-mono text-sm text-accent">{t.year}</div>
+            <div class="font-mono text-sm text-accent-bright">{t.year}</div>
             <h3 class="mt-3 text-[length:var(--text-h2)] leading-[1.1] text-on-ink">{t.title}</h3>
             <p class="mt-3 max-w-lg leading-relaxed text-on-ink-muted">{t.body}</p>
           </li>
@@ -98,7 +101,7 @@ const disciplines = [
   <Section tone="base">
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-8">
       <div class="lg:col-span-4">
-        <SectionHeader number="04" eyebrow="Team" title={teamSize ? `Seven people, three disciplines` : 'Three disciplines'} />
+        <SectionHeader number="04" eyebrow="Team" title={teamWord ? `${teamWord[0].toUpperCase()}${teamWord.slice(1)} people, three disciplines` : 'Three disciplines'} />
         {teamSize && (
           <p class="reveal mt-10 font-display text-[clamp(5rem,4rem+5vw,8rem)] font-medium leading-none tracking-[-0.04em] text-ink" style="--reveal-delay:80ms">
             {teamSize}<span class="meta ml-3 align-top text-muted">people</span>

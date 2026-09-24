@@ -18,7 +18,7 @@ const fmt = (n: number) => n.toLocaleString('en-US');
       <dd class:list={['order-1 font-display text-[length:var(--text-h1)] font-medium leading-none tracking-[-0.03em] tabular-nums', invert ? 'text-on-ink' : 'text-ink']}>
         {('raw' in m && m.raw)
           ? <span>{m.value}{m.suffix}</span>
-          : <span aria-label={`${fmt(m.value)}${m.suffix}`}><span aria-hidden="true" data-count={m.value} data-suffix={m.suffix}>{fmt(m.value)}{m.suffix}</span></span>}
+          : <><span class="sr-only">{fmt(m.value)}{m.suffix}</span><span aria-hidden="true" data-count={m.value} data-suffix={m.suffix}>{fmt(m.value)}{m.suffix}</span></>}
       </dd>
     </div>
   ))}

@@ -41,7 +41,7 @@ const isActive = (href: string) =>
         <button
           type="button"
           class="hidden h-9 items-center gap-2 rounded-full border border-line px-3 text-sm text-muted transition-colors hover:border-line-strong hover:text-ink md:inline-flex"
-          aria-label="Search the site"
+          aria-label="Search"
           aria-haspopup="dialog"
           data-cmdk-open
         >
@@ -97,7 +97,7 @@ const isActive = (href: string) =>
       <button type="button" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3.5 text-sm text-on-ink" data-cmdk-open>
         <Icon name="search" size={16} />Search products & pages
       </button>
-      <a href={cta.primary.href} class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-4 text-base font-medium text-white">{cta.primary.label}</a>
+      <a href={cta.primary.href} class="inline-flex items-center justify-center rounded-full bg-accent-strong px-6 py-4 text-base font-medium text-white">{cta.primary.label}</a>
       <a href={`mailto:${site.email}`} class="mt-2 text-center text-sm text-on-ink-muted">{site.email}</a>
     </div>
   </div>

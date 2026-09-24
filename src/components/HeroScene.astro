@@ -114,19 +114,19 @@ const outputs = [
   }
 
   /* ---- Intro choreography (only while JS runs and before .is-playing) ---- */
-  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-doc { opacity: 0; transform: translateY(12px); }
-  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-links path { stroke-dashoffset: 1; }
-  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-out { opacity: 0; transform: translateX(-24%) scale(0.96); }
-  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-check { transform: scale(0); }
+  :global(html.js) .hero-scene:not(.is-playing) .hs-doc { opacity: 0; transform: translateY(12px); }
+  :global(html.js) .hero-scene:not(.is-playing) .hs-links path { stroke-dashoffset: 1; }
+  :global(html.js) .hero-scene:not(.is-playing) .hs-out { opacity: 0; transform: translateX(-24%) scale(0.96); }
+  :global(html.js) .hero-scene:not(.is-playing) .hs-check { transform: scale(0); }
 
-  .hs-doc { transition: opacity 700ms var(--ease-out) 450ms, transform 700ms var(--ease-out) 450ms; }
-  .hs-links path { transition: stroke-dashoffset 600ms var(--ease-in-out); transition-delay: calc(1400ms + var(--k) * 120ms); }
+  .hs-doc { transition: opacity 650ms var(--ease-out) 350ms, transform 650ms var(--ease-out) 350ms; }
+  .hs-links path { transition: stroke-dashoffset 600ms var(--ease-in-out); transition-delay: calc(1050ms + var(--k) * 100ms); }
   .hero-scene.is-playing .hs-out {
     transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out), border-color var(--dur-base), box-shadow var(--dur-base);
-    transition-delay: calc(1550ms + var(--k) * 140ms), calc(1550ms + var(--k) * 140ms), 0s, 0s;
+    transition-delay: calc(1150ms + var(--k) * 120ms), calc(1150ms + var(--k) * 120ms), 0s, 0s;
   }
-  .hs-check { transition: transform 400ms var(--ease-out); transition-delay: calc(2000ms + var(--k) * 140ms); }
-  .hero-scene.is-playing .hs-scan { animation: hs-scan 900ms var(--ease-in-out) 900ms both; }
+  .hs-check { transition: transform 400ms var(--ease-out); transition-delay: calc(1500ms + var(--k) * 120ms); }
+  .hero-scene.is-playing .hs-scan { animation: hs-scan 750ms var(--ease-in-out) 650ms both; }
   @keyframes hs-scan {
     0% { transform: translateY(-100%); opacity: 1; }
     85% { opacity: 1; }

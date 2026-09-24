@@ -16,13 +16,17 @@
   --color-line: #ece1da;
   --color-line-strong: #dccfc7;
   --color-accent: #e0483c;
-  --color-accent-hover: #c53a30;
+  --color-accent-hover: #b8342a;
+  /* Contrast-safe variants (WCAG AA): white-on-coral fills, small coral text on light / on dark */
+  --color-accent-strong: #d44036;
+  --color-accent-ink: #c0382e;
+  --color-accent-bright: #ec6458;
   --color-accent-soft: #fbe7e2;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
-    Roboto, Helvetica, Arial, sans-serif;
-  --font-display: 'Instrument Sans', var(--font-sans);
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* Families are self-hosted via Astro's font API (see astro.config.mjs) */
+  --font-sans: var(--ff-inter);
+  --font-display: var(--ff-display);
+  --font-mono: var(--ff-mono);
 
   /* Fluid display scale */
   --text-hero: clamp(2.8rem, 1.5rem + 5vw, 5.6rem);
@@ -162,6 +166,17 @@
     opacity: 0;
     transform: translateY(10px);
   }
+
+  /* Single-line masked title (product detail). Skipped on router navigations, where the
+     view transition morphs the title in from the product card instead. */
+  .title-reveal {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.1em;
+    margin-bottom: -0.1em;
+  }
+  .title-reveal > span { transition: transform 900ms var(--ease-out) 120ms; }
+  html.js:not(.via-router) [data-intro]:not(.is-in) .title-reveal > span { transform: translateY(110%); }
 
   .link-underline {
     background-image: linear-gradient(currentColor, currentColor);

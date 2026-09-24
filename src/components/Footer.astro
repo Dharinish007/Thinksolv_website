@@ -16,44 +16,46 @@ const cols = [
   { title: 'Company', links: nav.filter((n) => n.href !== '/').map((n) => ({ label: n.label, href: n.href })) },
 ];
 ---
-<footer class="relative overflow-hidden border-t border-white/10 bg-ink text-on-ink-muted">
+<footer class="relative overflow-hidden bg-surface-2 text-muted">
   <div class="container-x pt-20 pb-8">
     <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
       <div class="lg:col-span-4">
-        <div class="[&_span]:text-on-ink"><Logo /></div>
+        <Logo />
         <p class="mt-4 max-w-xs text-sm leading-relaxed">{site.tagline} Focused tools for document-centric work across Google Workspace and Chrome.</p>
         <div class="mt-6"><Button href={cta.primary.href}>{cta.primary.label}</Button></div>
       </div>
       {cols.map((col, i) => (
         <nav aria-label={col.title} class:list={[i === 0 ? 'lg:col-span-3 lg:col-start-6' : 'lg:col-span-2']}>
-          <h3 class="meta text-on-ink-muted/70">{col.title}</h3>
+          <h3 class="meta text-muted">{col.title}</h3>
           <ul class="mt-5 space-y-3">
             {col.links.map((l) => (
-              <li><a href={l.href} class="link-underline text-sm text-on-ink/85 transition-colors hover:text-on-ink">{l.label}</a></li>
+              <li><a href={l.href} class="link-underline text-sm text-ink-soft transition-colors hover:text-ink">{l.label}</a></li>
             ))}
           </ul>
         </nav>
       ))}
       <div class="lg:col-span-2">
-        <h3 class="meta text-on-ink-muted/70">Contact</h3>
+        <h3 class="meta text-muted">Contact</h3>
         <ul class="mt-5 space-y-3 text-sm">
-          <li><a href={`mailto:${site.email}`} class="link-underline inline-flex items-center gap-2 text-on-ink/85 hover:text-on-ink"><Icon name="mail" size={15} />{site.email}</a></li>
+          <li><a href={`mailto:${site.email}`} class="link-underline inline-flex items-center gap-2 text-ink-soft hover:text-ink"><Icon name="mail" size={15} />{site.email}</a></li>
           {socials.map((s) => (
-            <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="link-underline text-on-ink/85 hover:text-on-ink">{s.label}</a></li>
+            <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="link-underline text-ink-soft hover:text-ink">{s.label}</a></li>
           ))}
         </ul>
       </div>
     </div>
 
-    <p class="footer-mark pointer-events-none mt-16 select-none font-display leading-none tracking-[-0.05em] text-on-ink/[0.06]" aria-hidden="true">thinksolv</p>
+    <div class="footer-mark pointer-events-none mt-16 select-none font-display leading-none tracking-[-0.05em] text-ink/[0.045]" aria-hidden="true"></div>
 
-    <div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs md:flex-row md:items-center md:justify-between">
+    <div class="mt-4 flex flex-col gap-3 border-t border-line-strong pt-6 text-xs md:flex-row md:items-center md:justify-between">
       <p>© {year} {site.legalName}. All rights reserved.</p>
-      <p class="meta text-on-ink-muted/70">Est. {site.founded}</p>
+      <p class="meta text-muted">Est. {site.founded}</p>
     </div>
   </div>
 </footer>
 
 <style>
+  /* Decorative wordmark drawn by CSS so it is not exposed as page text */
   .footer-mark { font-size: clamp(4rem, 19vw, 16.5rem); margin-left: -0.04em; font-weight: 600; }
+  .footer-mark::before { content: 'thinksolv'; }
 </style>

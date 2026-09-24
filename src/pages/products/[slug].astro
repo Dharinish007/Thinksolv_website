@@ -76,7 +76,7 @@ const toc = [
             <span class="meta text-muted">{data.category} · {data.platform}</span>
           </div>
           <h1 class="mt-8 text-[length:var(--text-h1)] leading-[1.02] tracking-[-0.03em]">
-            <span class="inline-block" transition:name={`product-title-${id}`}>{data.name}</span>
+            <span class="title-reveal"><span class="inline-block" transition:name={`product-title-${id}`}>{data.name}</span></span>
           </h1>
           <p class="intro-fade mt-5 max-w-xl text-[length:var(--text-lead)] leading-relaxed text-muted" style="--d:300ms">{data.tagline}</p>
           <div class="intro-fade mt-9 flex flex-wrap items-center gap-x-6 gap-y-4" style="--d:400ms">
@@ -111,7 +111,7 @@ const toc = [
         <span class="inline-flex h-12 w-12 rotate-90 items-center justify-center rounded-full border border-line-strong bg-bg lg:rotate-0"><Icon name="arrow" size={20} /></span>
       </div>
       <div class="reveal rounded-[var(--radius)] border border-accent/25 bg-surface p-8 shadow-soft md:p-10" style="--reveal-delay:160ms">
-        <p class="meta text-accent">After — {data.name}</p>
+        <p class="meta text-accent-ink">After — {data.name}</p>
         <p class="mt-6 font-display text-[length:var(--text-h3)] leading-snug text-ink">{data.solution}</p>
       </div>
     </div>
@@ -123,9 +123,9 @@ const toc = [
     <div class="mt-12 lg:mt-4">
       <StepStory steps={data.howItWorks} compact>
         {/* Astro slots can't be named dynamically inside a map, so the (up to) three visuals are explicit */}
-        {data.howItWorks[0] && <div slot="v0"><ProductStepVisual step={0} title={data.howItWorks[0].title} icon={data.icon} /></div>}
-        {data.howItWorks[1] && <div slot="v1"><ProductStepVisual step={1} title={data.howItWorks[1].title} icon={data.icon} /></div>}
-        {data.howItWorks[2] && <div slot="v2"><ProductStepVisual step={2} title={data.howItWorks[2].title} icon={data.icon} /></div>}
+        {data.howItWorks[0] && <div slot="v0"><ProductStepVisual step={0} product={product} /></div>}
+        {data.howItWorks[1] && <div slot="v1"><ProductStepVisual step={1} product={product} /></div>}
+        {data.howItWorks[2] && <div slot="v2"><ProductStepVisual step={2} product={product} /></div>}
       </StepStory>
     </div>
   </Section>

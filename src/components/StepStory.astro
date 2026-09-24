@@ -27,7 +27,7 @@ const visuals = await Promise.all(steps.map((_, i) => Astro.slots.render(`v${i}`
         <div class:list={['ss-inline mb-8 aspect-[4/3] overflow-hidden rounded-[var(--radius)] border p-8 lg:hidden', invert ? 'border-white/10 bg-ink-2' : 'border-line bg-surface']} aria-hidden="true">
           <div class="grid h-full place-items-center" set:html={visuals[i]} />
         </div>
-        <span class:list={['font-mono text-sm', invert ? 'text-accent' : 'text-accent']}>{s.n ?? String(i + 1).padStart(2, '0')}</span>
+        <span class:list={['font-mono text-sm', invert ? 'text-accent-bright' : 'text-accent-ink']}>{s.n ?? String(i + 1).padStart(2, '0')}</span>
         <div class:list={['mt-4 h-px w-full', invert ? 'bg-white/10' : 'bg-line']}></div>
         <h3 class:list={['mt-6 text-[length:var(--text-h2)] leading-[1.1]', invert && 'text-on-ink']}>{s.title}</h3>
         <p class:list={['mt-4 max-w-md text-base leading-relaxed md:text-lg', invert ? 'text-on-ink-muted' : 'text-muted']}>{s.body}</p>
@@ -41,7 +41,7 @@ const visuals = await Promise.all(steps.map((_, i) => Astro.slots.render(`v${i}`
   .ss-visual:first-child, .ss-visual.is-active { opacity: 1; transform: none; }
   :global(html.js) .ss-visual:first-child:not(.is-active) { opacity: 0; transform: scale(0.97); }
   @media (min-width: 1024px) {
-    :global(html.js) .ss-step { opacity: 0.35; transition: opacity 400ms var(--ease-out); }
+    :global(html.js) .ss-step { opacity: 0.5; transition: opacity 400ms var(--ease-out); }
     :global(html.js) .ss-step.is-active { opacity: 1; }
   }
   /* Reduced motion: static stacked layout at every size */
