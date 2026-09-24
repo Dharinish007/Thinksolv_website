@@ -14,6 +14,12 @@ const options = [
 
 const field =
   'w-full rounded-xl border border-line bg-bg px-4 py-3 text-ink outline-none transition-[border-color,box-shadow] duration-[var(--dur-base)] placeholder:text-muted hover:border-line-strong focus:border-accent focus:ring-4 focus:ring-accent-soft aria-[invalid=true]:border-accent';
+
+// Real submissions go through Netlify Forms. That only works once the site is hosted on Netlify
+// with form detection enabled, so it is an explicit opt-in: set NETLIFY_FORMS=true in the Netlify
+// build environment after enabling it. Until then the form keeps its mailto behaviour — a host can
+// answer POST requests with 200 without any form handler, so this must not be auto-detected.
+const netlifyForms = process.env.NETLIFY_FORMS === 'true';
 ---
 <Base title="Contact" description="Talk to the ThinkSolv team about products, services or custom document workflows.">
   <PageHero
@@ -58,6 +64,7 @@ const field =
         data-netlify="true"
         netlify-honeypot="bot-field"
         data-email={site.email}
+        {...(netlifyForms ? { 'data-submit': 'netlify' } : {})}
         novalidate
       >
         <input type="hidden" name="form-name" value="contact" />
@@ -121,7 +128,7 @@ const field =
       input?.setAttribute('aria-invalid', String(show));
       err?.classList.toggle('hidden', !show);
     };
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       let ok = true;
       fields.forEach((id) => {
@@ -131,9 +138,29 @@ const field =
         if (!valid) ok = false;
       });
       if (!ok) { if (status) status.textContent = 'Please fix the highlighted fields.'; return; }
-      // CONFIRM: wire a real backend (Netlify Forms attrs are set, or use Formspree/Resend).
-      // Guaranteed-working fallback: open the user’s mail client pre-filled.
       const data = new FormData(form);
+      // Netlify builds only (data-submit="netlify"): post to Netlify Forms in the background.
+      // Any failure — form detection not enabled, network error — falls through to mailto.
+      if (form.dataset.submit === 'netlify') {
+        const button = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+        if (button) button.disabled = true;
+        if (status) status.textContent = 'Sending…';
+        try {
+          const res = await fetch('/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams(data as unknown as Record<string, string>).toString(),
+          });
+          if (res.ok) {
+            form.reset();
+            if (status) status.textContent = 'Thanks — your message has been sent. We’ll reply within one business day.';
+            if (button) button.disabled = false;
+            return;
+          }
+        } catch {}
+        if (button) button.disabled = false;
+      }
+      // Fallback (and the only path outside Netlify): open the visitor's mail client pre-filled.
       const subject = encodeURIComponent(String(data.get('subject') || 'Website enquiry'));
       const body = encodeURIComponent(`Name: ${data.get('name')}\nEmail: ${data.get('email')}\n\n${data.get('message')}`);
       if (status) status.textContent = 'Opening your email app to send…';

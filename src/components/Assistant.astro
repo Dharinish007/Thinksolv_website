@@ -93,6 +93,12 @@ const chips = ['Convert Docs to PDF', 'Publish Docs to WordPress', 'Convert a wh
     transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), background-color var(--dur-fast);
   }
   .assistant-launcher:hover { background-color: var(--color-ink-3); }
+  /* Steps aside while a small interactive element is underneath it (see ui.ts) */
+  .assistant.is-yielding:not(.is-open) .assistant-launcher {
+    opacity: 0;
+    transform: translateY(12px) scale(0.96);
+    pointer-events: none;
+  }
   html.js .assistant:not(.is-ready) .assistant-launcher {
     opacity: 0;
     transform: translateY(12px);

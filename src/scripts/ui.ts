@@ -264,12 +264,44 @@ document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape' && (e.target as Element).closest?.('#assistant')) closeAssistant();
 });
 
+// Launcher steps aside while a small interactive target (a button, link or form field) sits
+// underneath it, so it never blocks CTAs, footer links or the contact form. Large targets such as
+// product cards are ignored — they stay clickable around it. Never yields while open or focused.
+const YIELD_MAX_TARGET_HEIGHT = 160;
+let yieldTargets: HTMLElement[] = [];
+let yieldTicking = false;
+function updateLauncherYield() {
+  yieldTicking = false;
+  const root = $('#assistant');
+  if (!root) return;
+  const launcher = $('[data-assistant-launcher]', root);
+  if (root.classList.contains('is-open') || document.activeElement === launcher) { root.classList.remove('is-yielding'); return; }
+  const a = root.getBoundingClientRect(); // the fixed container, unaffected by the launcher's own transform
+  const hit = yieldTargets.some((el) => {
+    const b = el.getBoundingClientRect();
+    return b.height > 0 && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+  });
+  root.classList.toggle('is-yielding', hit);
+}
+const queueYield = () => { if (!yieldTicking) { yieldTicking = true; requestAnimationFrame(updateLauncherYield); } };
+window.addEventListener('scroll', queueYield, { passive: true });
+window.addEventListener('resize', queueYield, { passive: true });
+document.addEventListener('focusin', queueYield);
+function collectYieldTargets() {
+  yieldTargets = $$('main a, main button, main input, main textarea, main select, footer a, footer button')
+    .filter((el) => !el.closest('#assistant')
+      // form fields always count; links/buttons only when small (large cards stay clickable around it)
+      && (el.matches('input, textarea, select') || el.getBoundingClientRect().height <= YIELD_MAX_TARGET_HEIGHT));
+  queueYield();
+}
+
 // Launcher appears after the hero intro (motion.ts dispatches ts:hero-done), or shortly after load elsewhere.
 document.addEventListener('ts:hero-done', () => $('#assistant')?.classList.add('is-ready'));
 
 /* ---------------- Lifecycle ---------------- */
 
 document.addEventListener('astro:page-load', () => {
+  collectYieldTargets();
   initHeader();
   if (!document.querySelector('[data-hero]')) setTimeout(() => $('#assistant')?.classList.add('is-ready'), 600);
 });

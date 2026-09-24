@@ -41,13 +41,13 @@ const isActive = (href: string) =>
         <button
           type="button"
           class="hidden h-9 items-center gap-2 rounded-full border border-line px-3 text-sm text-muted transition-colors hover:border-line-strong hover:text-ink md:inline-flex"
-          aria-label="Search"
+          aria-keyshortcuts="Control+K Meta+K"
           aria-haspopup="dialog"
           data-cmdk-open
         >
           <Icon name="search" size={16} />
-          <span class="hidden lg:inline">Search</span>
-          <kbd class="hidden rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-muted lg:inline" data-kbd>⌘K</kbd>
+          <span class="sr-only lg:not-sr-only">Search</span>
+          <kbd class="hidden rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-muted lg:inline" aria-hidden="true" data-kbd>⌘K</kbd>
         </button>
         <div class="hidden md:block"><Button href={cta.primary.href} class="!px-4 !py-2">{cta.primary.label}</Button></div>
         <button

@@ -100,8 +100,10 @@
     html { scroll-behavior: auto; }
     *, *::before, *::after {
       animation-duration: 0.001ms !important;
+      animation-delay: 0s !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
+      transition-delay: 0s !important; /* choreography delays must not hold content back either */
       scroll-behavior: auto !important;
     }
   }
