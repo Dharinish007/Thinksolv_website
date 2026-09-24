@@ -4,7 +4,7 @@ interface Props { class?: string }
 const { class: className = '' } = Astro.props;
 ---
 <span class:list={['inline-flex items-center gap-2 font-display font-semibold text-ink', className]}>
-  <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="text-accent shrink-0">
+  <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="text-accent shrink-0" data-logo-mark>
     <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
       <path d="M16 3.5v3"/><path d="M16 25.5v3"/><path d="M3.5 16h3"/><path d="M25.5 16h3"/>
       <path d="m7.2 7.2 2.1 2.1"/><path d="m22.7 22.7 2.1 2.1"/><path d="m24.8 7.2-2.1 2.1"/><path d="m9.3 22.7-2.1 2.1"/>

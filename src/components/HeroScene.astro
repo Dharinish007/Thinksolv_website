@@ -1,0 +1,137 @@
+---
+// Signature hero visual: one Google Doc is scanned and fans out into PDF, Markdown and WordPress.
+// Plays once when motion.ts adds .is-playing, then rests. Final state is the default (no-JS / reduced motion).
+import Icon from './Icon.astro';
+const outputs = [
+  { label: 'PDF', file: 'q3-report.pdf', icon: 'pdf' },
+  { label: 'MD', file: 'q3-report.md', icon: 'markdown' },
+  { label: 'WP', file: 'Draft · Q3 Report', icon: 'wp' },
+];
+---
+<div class="hero-scene" data-hero-scene aria-hidden="true">
+  <div class="hs-box">
+    <!-- Connectors -->
+    <svg class="hs-links" viewBox="0 0 100 80" preserveAspectRatio="none">
+      <path pathLength="1" style="--k:0" d="M47 40 C 54 40, 53 13, 60 13" />
+      <path pathLength="1" style="--k:1" d="M47 40 C 54 40, 53 40, 60 40" />
+      <path pathLength="1" style="--k:2" d="M47 40 C 54 40, 53 67, 60 67" />
+    </svg>
+
+    <!-- Source document -->
+    <div class="hs-doc">
+      <div class="hs-doc-bar">
+        <span class="hs-doc-icon"><Icon name="doc" size={14} /></span>
+        <span class="hs-mono">Q3 Report</span>
+        <span class="hs-mono hs-dim">Google Docs</span>
+      </div>
+      <div class="hs-doc-body">
+        <span class="hs-line hs-h" style="width:62%"></span>
+        <span class="hs-line" style="width:92%"></span>
+        <span class="hs-line" style="width:84%"></span>
+        <span class="hs-line" style="width:88%"></span>
+        <span class="hs-block"></span>
+        <span class="hs-line hs-h2" style="width:44%"></span>
+        <span class="hs-line" style="width:90%"></span>
+        <span class="hs-line" style="width:76%"></span>
+        <span class="hs-line" style="width:82%"></span>
+      </div>
+      <div class="hs-scan"><span></span></div>
+    </div>
+
+    <!-- Outputs -->
+    {outputs.map((o, i) => (
+      <div class="hs-out" style={`--k:${i}; --top:${[2, 29, 56][i]}%`}>
+        <div class="hs-out-head">
+          <span class="hs-badge">{o.label}</span>
+          <span class="hs-mono hs-file">{o.file}</span>
+          <span class="hs-check"><Icon name="check" size={12} /></span>
+        </div>
+        <span class="hs-line" style="width:80%"></span>
+        <span class="hs-line" style="width:60%"></span>
+      </div>
+    ))}
+  </div>
+</div>
+
+<style>
+  .hero-scene { container-type: inline-size; width: 100%; }
+  .hs-box { position: relative; aspect-ratio: 5 / 4; }
+
+  .hs-mono { font-family: var(--font-mono); font-size: max(9px, 2.3cqw); color: var(--color-ink-soft); white-space: nowrap; }
+  .hs-dim { margin-left: auto; color: var(--color-muted); }
+  .hs-line { display: block; height: max(4px, 1.4cqw); border-radius: 99px; background: var(--color-line); }
+
+  /* Source doc */
+  .hs-doc {
+    position: absolute; left: 0; top: 7.5%; width: 47%; height: 85%;
+    border: 1px solid var(--color-line); border-radius: var(--radius); background: var(--color-surface);
+    box-shadow: var(--shadow-lift); overflow: hidden;
+  }
+  .hs-doc-bar { display: flex; align-items: center; gap: 2cqw; padding: 3cqw 3.5cqw; border-bottom: 1px solid var(--color-line); }
+  .hs-doc-icon { display: inline-flex; color: var(--color-accent); }
+  .hs-doc-body { display: flex; flex-direction: column; gap: 2.4cqw; padding: 4.5cqw 3.5cqw; }
+  .hs-doc-body .hs-h { height: max(7px, 2.6cqw); background: var(--color-line-strong); }
+  .hs-doc-body .hs-h2 { height: max(6px, 2cqw); background: var(--color-line-strong); margin-top: 1cqw; }
+  .hs-block { display: block; height: 16cqw; border-radius: 1.5cqw; background: var(--color-surface-2); border: 1px solid var(--color-line); }
+
+  .hs-scan { position: absolute; inset: 0; pointer-events: none; transform: translateY(-100%); opacity: 0; }
+  .hs-scan span {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, transparent 70%, rgb(224 72 60 / 0.08) 99%, var(--color-accent) 99.4%);
+  }
+
+  /* Connectors */
+  .hs-links { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .hs-links path { fill: none; stroke: var(--color-line-strong); stroke-width: 1; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 0; }
+
+  /* Outputs */
+  .hs-out {
+    position: absolute; left: 60%; top: var(--top); width: 40%;
+    display: flex; flex-direction: column; gap: 2cqw; padding: 3cqw;
+    border: 1px solid var(--color-line); border-radius: calc(var(--radius) * 0.85); background: var(--color-surface);
+    box-shadow: var(--shadow-soft);
+    transition: transform var(--dur-base) var(--ease-out), border-color var(--dur-base), box-shadow var(--dur-base);
+  }
+  .hs-out-head { display: flex; align-items: center; gap: 2cqw; margin-bottom: 1cqw; min-width: 0; }
+  .hs-badge {
+    font-family: var(--font-mono); font-size: max(9px, 2.2cqw); font-weight: 500; letter-spacing: 0.08em;
+    padding: 0.6cqw 1.6cqw; border-radius: 99px; background: var(--color-ink); color: var(--color-on-ink);
+  }
+  .hs-file { overflow: hidden; text-overflow: ellipsis; flex: 1; min-width: 0; }
+  .hs-check {
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+    width: max(16px, 4.4cqw); height: max(16px, 4.4cqw); border-radius: 99px; background: var(--color-accent-soft); color: var(--color-accent);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .hero-scene { pointer-events: auto; }
+    .hs-out:hover { transform: translateY(-3px); border-color: var(--color-line-strong); box-shadow: var(--shadow-lift); }
+  }
+
+  /* Small containers: simplify to badge + check */
+  @container (max-width: 300px) {
+    .hs-out .hs-line, .hs-file { display: none; }
+    .hs-out { width: 34%; }
+  }
+
+  /* ---- Intro choreography (only while JS runs and before .is-playing) ---- */
+  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-doc { opacity: 0; transform: translateY(12px); }
+  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-links path { stroke-dashoffset: 1; }
+  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-out { opacity: 0; transform: translateX(-24%) scale(0.96); }
+  :global(html.js) .hero-scene:not(:global(.is-playing)) .hs-check { transform: scale(0); }
+
+  .hs-doc { transition: opacity 700ms var(--ease-out) 450ms, transform 700ms var(--ease-out) 450ms; }
+  .hs-links path { transition: stroke-dashoffset 600ms var(--ease-in-out); transition-delay: calc(1400ms + var(--k) * 120ms); }
+  .hero-scene.is-playing .hs-out {
+    transition: opacity 600ms var(--ease-out), transform 700ms var(--ease-out), border-color var(--dur-base), box-shadow var(--dur-base);
+    transition-delay: calc(1550ms + var(--k) * 140ms), calc(1550ms + var(--k) * 140ms), 0s, 0s;
+  }
+  .hs-check { transition: transform 400ms var(--ease-out); transition-delay: calc(2000ms + var(--k) * 140ms); }
+  .hero-scene.is-playing .hs-scan { animation: hs-scan 900ms var(--ease-in-out) 900ms both; }
+  @keyframes hs-scan {
+    0% { transform: translateY(-100%); opacity: 1; }
+    85% { opacity: 1; }
+    100% { transform: translateY(0); opacity: 0; }
+  }
+  /* Once played, hover transitions must not inherit the long intro delays */
+  .hero-scene.is-settled .hs-out { transition-delay: 0s; }
+</style>

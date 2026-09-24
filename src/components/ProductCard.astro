@@ -1,24 +1,59 @@
 ---
 import Icon from './Icon.astro';
 import type { CollectionEntry } from 'astro:content';
-interface Props { product: CollectionEntry<'products'>; }
-const { product } = Astro.props;
+interface Props { product: CollectionEntry<'products'>; size?: 'md' | 'lg'; class?: string }
+const { product, size = 'md', class: className = '' } = Astro.props;
 const { data, id } = product;
+const lg = size === 'lg';
+const steps = data.howItWorks;
 ---
 <a
   href={`/products/${id}`}
-  class="reveal group flex h-full flex-col rounded-[var(--radius)] border border-line bg-surface p-6 shadow-soft transition-all duration-300 hover:-translate-y-1 hover:border-accent/30 hover:shadow-lift"
+  class:list={[
+    'spotlight reveal group flex h-full flex-col rounded-[var(--radius)] border border-line bg-surface transition-[border-color,box-shadow] duration-[var(--dur-base)] hover:border-line-strong hover:shadow-soft',
+    lg ? 'p-7 md:p-9' : 'p-6',
+    className,
+  ]}
 >
-  <div class="flex items-start justify-between">
-    <span class="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-accent-soft text-accent transition-colors group-hover:bg-accent group-hover:text-white">
-      <Icon name={data.icon} size={24} />
+  <div class="flex items-start justify-between gap-4">
+    <span class="meta text-muted">{data.category}</span>
+    <span
+      class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-line text-ink-soft transition-colors duration-[var(--dur-base)] group-hover:text-accent"
+      transition:name={`product-icon-${id}`}
+    >
+      <Icon name={data.icon} size={20} />
     </span>
-    <span class="text-xs font-medium uppercase tracking-wide text-muted">{data.category}</span>
   </div>
-  <h3 class="mt-5 text-[length:var(--text-h3)] font-semibold">{data.name}</h3>
-  <p class="mt-2 flex-1 text-sm leading-relaxed text-muted">{data.summary}</p>
-  <span class="mt-5 inline-flex items-center gap-1.5 text-sm font-medium text-accent">
+
+  {lg && (
+    /* Mini UI mock: the product's first steps, rendered from its own content */
+    <div class="mt-8 rounded-xl border border-line bg-bg p-4" aria-hidden="true">
+      <div class="mb-3 flex items-center gap-1.5">
+        <span class="h-2 w-2 rounded-full bg-line-strong"></span><span class="h-2 w-2 rounded-full bg-line-strong"></span><span class="h-2 w-2 rounded-full bg-line-strong"></span>
+        <span class="meta ml-2 text-[0.6rem] text-muted">{data.platform}</span>
+      </div>
+      <ul class="space-y-2">
+        {['Quarterly report', 'Client proposal', 'Meeting notes'].map((doc, i) => (
+          <li class="flex items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
+            <span class:list={['inline-flex h-4 w-4 items-center justify-center rounded border', i < 2 ? 'border-accent bg-accent text-white' : 'border-line-strong']}>
+              {i < 2 && <Icon name="check" size={11} />}
+            </span>
+            <Icon name="doc" size={14} class="text-muted" />{doc}
+            <span class="ml-auto h-1.5 w-12 rounded-full bg-line"></span>
+          </li>
+        ))}
+      </ul>
+      <div class="mt-3 flex items-center justify-between">
+        <span class="text-[0.7rem] text-muted">{steps[1]?.title ?? ''}</span>
+        <span class="rounded-full bg-accent px-3 py-1 text-[0.7rem] font-medium text-white">{steps[2]?.title ?? 'Run'}</span>
+      </div>
+    </div>
+  )}
+
+  <h3 class:list={['font-medium', lg ? 'mt-8 text-[length:var(--text-h2)] leading-[1.1]' : 'mt-8 text-[length:var(--text-h3)]']}>{data.name}</h3>
+  <p class:list={['mt-2 flex-1 leading-relaxed text-muted', lg ? 'max-w-md text-base' : 'text-sm']}>{lg ? data.tagline : data.summary}</p>
+  <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
     View product
-    <Icon name="arrow" size={16} class="transition-transform duration-200 group-hover:translate-x-1" />
+    <Icon name="arrow" size={16} class="text-accent transition-transform duration-[var(--dur-base)] ease-out group-hover:translate-x-1" />
   </span>
 </a>

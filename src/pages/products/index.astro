@@ -98,15 +98,18 @@ const featured = products.find((p) => p.data.featured) ?? products[0];
 </Base>
 
 <script>
-  const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
-  const items = document.querySelectorAll<HTMLElement>('.product-item');
-  pills.forEach((pill) => {
-    pill.addEventListener('click', () => {
-      const filter = pill.dataset.filter;
-      pills.forEach((p) => p.setAttribute('aria-selected', String(p === pill)));
-      items.forEach((item) => {
-        const show = filter === 'All' || item.dataset.category === filter;
-        item.style.display = show ? '' : 'none';
+  // Re-bind on every ClientRouter navigation
+  document.addEventListener('astro:page-load', () => {
+    const pills = document.querySelectorAll<HTMLButtonElement>('.filter-pill');
+    const items = document.querySelectorAll<HTMLElement>('.product-item');
+    pills.forEach((pill) => {
+      pill.addEventListener('click', () => {
+        const filter = pill.dataset.filter;
+        pills.forEach((p) => p.setAttribute('aria-selected', String(p === pill)));
+        items.forEach((item) => {
+          const show = filter === 'All' || item.dataset.category === filter;
+          item.style.display = show ? '' : 'none';
+        });
       });
     });
   });

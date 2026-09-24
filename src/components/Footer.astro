@@ -1,46 +1,59 @@
 ---
-import { site, cta } from '@/data/site';
+import { getCollection } from 'astro:content';
+import { site, cta, nav } from '@/data/site';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import Button from './Button.astro';
 const year = new Date().getFullYear();
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+const socials = [
+  { label: 'LinkedIn', href: site.social.linkedin },
+  { label: 'X', href: site.social.x },
+  { label: 'Chrome Web Store', href: site.social.chromeStore },
+].filter((s) => s.href);
 const cols = [
-  { title: 'Product', links: [
-    { label: 'Products', href: '/products' },
-    { label: 'Services', href: '/services' },
-  ]},
-  { title: 'Company', links: [
-    { label: 'About', href: '/about' },
-    { label: 'Contact', href: '/contact' },
-  ]},
+  { title: 'Products', links: products.map((p) => ({ label: p.data.name, href: `/products/${p.id}` })) },
+  { title: 'Company', links: nav.filter((n) => n.href !== '/').map((n) => ({ label: n.label, href: n.href })) },
 ];
 ---
-<footer class="bg-ink text-[#d9cdc6]">
-  <div class="container-x py-16">
-    <div class="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr] md:gap-8">
-      <div>
-        <div class="[&_span]:text-[#f6efec]"><Logo /></div>
-        <p class="mt-4 max-w-xs text-sm leading-relaxed text-[#b6a89f]">{site.tagline}</p>
-        <a href={cta.primary.href} class="mt-6 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover">
-          {cta.primary.label}<Icon name="arrow" size={16} />
-        </a>
+<footer class="relative overflow-hidden border-t border-white/10 bg-ink text-on-ink-muted">
+  <div class="container-x pt-20 pb-8">
+    <div class="grid gap-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-8">
+      <div class="lg:col-span-4">
+        <div class="[&_span]:text-on-ink"><Logo /></div>
+        <p class="mt-4 max-w-xs text-sm leading-relaxed">{site.tagline} Focused tools for document-centric work across Google Workspace and Chrome.</p>
+        <div class="mt-6"><Button href={cta.primary.href}>{cta.primary.label}</Button></div>
       </div>
-      {cols.map((col) => (
-        <nav aria-label={col.title}>
-          <h3 class="text-xs font-semibold uppercase tracking-[0.14em] text-[#8c7d74]">{col.title}</h3>
-          <ul class="mt-4 space-y-2.5">
+      {cols.map((col, i) => (
+        <nav aria-label={col.title} class:list={[i === 0 ? 'lg:col-span-3 lg:col-start-6' : 'lg:col-span-2']}>
+          <h3 class="meta text-on-ink-muted/70">{col.title}</h3>
+          <ul class="mt-5 space-y-3">
             {col.links.map((l) => (
-              <li><a href={l.href} class="text-sm text-[#d9cdc6] transition-colors hover:text-white">{l.label}</a></li>
+              <li><a href={l.href} class="link-underline text-sm text-on-ink/85 transition-colors hover:text-on-ink">{l.label}</a></li>
             ))}
           </ul>
         </nav>
       ))}
+      <div class="lg:col-span-2">
+        <h3 class="meta text-on-ink-muted/70">Contact</h3>
+        <ul class="mt-5 space-y-3 text-sm">
+          <li><a href={`mailto:${site.email}`} class="link-underline inline-flex items-center gap-2 text-on-ink/85 hover:text-on-ink"><Icon name="mail" size={15} />{site.email}</a></li>
+          {socials.map((s) => (
+            <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="link-underline text-on-ink/85 hover:text-on-ink">{s.label}</a></li>
+          ))}
+        </ul>
+      </div>
     </div>
 
-    <div class="mt-14 flex flex-col gap-4 border-t border-white/10 pt-6 text-sm text-[#8c7d74] md:flex-row md:items-center md:justify-between">
+    <p class="footer-mark pointer-events-none mt-16 select-none font-display leading-none tracking-[-0.05em] text-on-ink/[0.06]" aria-hidden="true">thinksolv</p>
+
+    <div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-6 text-xs md:flex-row md:items-center md:justify-between">
       <p>© {year} {site.legalName}. All rights reserved.</p>
-      <a href={`mailto:${site.email}`} class="inline-flex items-center gap-2 transition-colors hover:text-white">
-        <Icon name="mail" size={16} />{site.email}
-      </a>
+      <p class="meta text-on-ink-muted/70">Est. {site.founded}</p>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-mark { font-size: clamp(4rem, 19vw, 16.5rem); margin-left: -0.04em; font-weight: 600; }
+</style>

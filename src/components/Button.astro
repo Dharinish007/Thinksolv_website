@@ -4,26 +4,30 @@ interface Props {
   href: string;
   variant?: 'primary' | 'secondary' | 'ghost';
   icon?: string;
+  onInk?: boolean;
   class?: string;
 }
-const { href, variant = 'primary', icon = 'arrow', class: className = '' } = Astro.props;
+const { href, variant = 'primary', icon = 'arrow', onInk = false, class: className = '' } = Astro.props;
 
 const base =
-  'group inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2';
+  'btn group inline-flex items-center gap-2 rounded-full text-sm font-medium transition-[background-color,border-color,color,box-shadow,scale] duration-[var(--dur-base)] ease-out active:scale-[0.98]';
 const variants = {
-  primary:
-    'bg-accent text-white shadow-soft hover:bg-accent-hover hover:shadow-lift hover:-translate-y-0.5',
-  secondary:
-    'bg-surface text-ink border border-line hover:border-accent/40 hover:-translate-y-0.5 hover:shadow-soft',
-  ghost: 'text-ink-soft hover:text-accent px-0 py-0',
+  primary: 'bg-accent px-5 py-2.5 text-white shadow-soft hover:bg-accent-hover',
+  secondary: onInk
+    ? 'border border-white/20 px-5 py-2.5 text-on-ink hover:border-white/50'
+    : 'border border-line-strong bg-surface px-5 py-2.5 text-ink hover:border-ink/30 hover:shadow-soft',
+  ghost: onInk ? 'link-underline text-on-ink' : 'link-underline text-ink',
 };
-const external = href.startsWith('http');
 ---
 <a
   href={href}
   class:list={[base, variants[variant], className]}
-  {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  {...(href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
 >
   <slot />
-  <Icon name={icon} size={16} class="transition-transform duration-200 group-hover:translate-x-0.5" />
+  {/* Arrow slides out and a copy slides in on hover */}
+  <span class="relative inline-flex h-4 w-4 overflow-hidden" aria-hidden="true">
+    <Icon name={icon} size={16} class="absolute inset-0 transition-transform duration-[var(--dur-base)] ease-out group-hover:translate-x-[140%]" />
+    <Icon name={icon} size={16} class="absolute inset-0 -translate-x-[140%] transition-transform duration-[var(--dur-base)] ease-out group-hover:translate-x-0" />
+  </span>
 </a>

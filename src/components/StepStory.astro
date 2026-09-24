@@ -1,0 +1,53 @@
+---
+// Sticky storytelling: steps scroll on the right while a pinned visual swaps state (lg+ only).
+// Visuals come from named slots v0, v1, … and are reused inline on smaller screens / reduced motion.
+// motion.ts toggles .is-active on [data-step] and [data-step-visual].
+interface Props {
+  steps: { n?: string; title: string; body: string }[];
+  invert?: boolean;
+}
+const { steps, invert = false } = Astro.props;
+const visuals = await Promise.all(steps.map((_, i) => Astro.slots.render(`v${i}`)));
+---
+<div class="step-story grid gap-12 lg:grid-cols-12 lg:gap-8" data-steps>
+  <div class="ss-sticky-col hidden lg:col-span-5 lg:block">
+    <div class="sticky top-[calc(50vh-min(20rem,40vh))]">
+      <div class:list={['relative aspect-square overflow-hidden rounded-[var(--radius-panel)] border', invert ? 'border-white/10 bg-ink-2' : 'border-line bg-surface']}>
+        {visuals.map((v) => (
+          <div class="ss-visual absolute inset-0 grid place-items-center p-10" data-step-visual aria-hidden="true" set:html={v} />
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <ol class="lg:col-span-6 lg:col-start-7">
+    {steps.map((s, i) => (
+      <li class="ss-step flex flex-col justify-center py-6 lg:min-h-[70vh] lg:py-0" data-step>
+        <div class:list={['ss-inline mb-8 aspect-[4/3] overflow-hidden rounded-[var(--radius)] border p-8 lg:hidden', invert ? 'border-white/10 bg-ink-2' : 'border-line bg-surface']} aria-hidden="true">
+          <div class="grid h-full place-items-center" set:html={visuals[i]} />
+        </div>
+        <span class:list={['font-mono text-sm', invert ? 'text-accent' : 'text-accent']}>{s.n ?? String(i + 1).padStart(2, '0')}</span>
+        <div class:list={['mt-4 h-px w-full', invert ? 'bg-white/10' : 'bg-line']}></div>
+        <h3 class:list={['mt-6 text-[length:var(--text-h2)] leading-[1.1]', invert && 'text-on-ink']}>{s.title}</h3>
+        <p class:list={['mt-4 max-w-md text-base leading-relaxed md:text-lg', invert ? 'text-on-ink-muted' : 'text-muted']}>{s.body}</p>
+      </li>
+    ))}
+  </ol>
+</div>
+
+<style>
+  .ss-visual { opacity: 0; transform: scale(0.97); transition: opacity 400ms var(--ease-out), transform 500ms var(--ease-out); }
+  .ss-visual:first-child, .ss-visual.is-active { opacity: 1; transform: none; }
+  :global(html.js) .ss-visual:first-child:not(.is-active) { opacity: 0; transform: scale(0.97); }
+  @media (min-width: 1024px) {
+    :global(html.js) .ss-step { opacity: 0.35; transition: opacity 400ms var(--ease-out); }
+    :global(html.js) .ss-step.is-active { opacity: 1; }
+  }
+  /* Reduced motion: static stacked layout at every size */
+  @media (prefers-reduced-motion: reduce) {
+    .ss-sticky-col { display: none !important; }
+    .step-story > ol { grid-column: 1 / -1 !important; }
+    .ss-inline { display: block !important; }
+    .ss-step { opacity: 1 !important; min-height: 0 !important; padding-block: 1.5rem !important; }
+  }
+</style>

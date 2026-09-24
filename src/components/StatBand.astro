@@ -1,0 +1,25 @@
+---
+// Editorial proof numbers. Only verified metrics render — entries marked `confirm` stay in site.ts
+// until signed off. HTML ships final values; motion.ts counts up from 0 when it can animate.
+import { metrics } from '@/data/site';
+interface Props { invert?: boolean }
+const { invert = false } = Astro.props;
+const verified = metrics.filter((m) => !m.confirm);
+const fmt = (n: number) => n.toLocaleString('en-US');
+---
+<dl class:list={['reveal grid border-y sm:grid-cols-3', invert ? 'border-white/10' : 'border-line']}>
+  {verified.map((m, i) => (
+    <div class:list={[
+      'flex flex-col gap-3 py-8 sm:px-8 sm:py-10',
+      i > 0 && (invert ? 'border-t border-white/10 sm:border-l sm:border-t-0' : 'border-t border-line sm:border-l sm:border-t-0'),
+      i === 0 && 'sm:pl-0',
+    ]}>
+      <dt class:list={['meta order-2', invert ? 'text-on-ink-muted' : 'text-muted']}>{m.label}</dt>
+      <dd class:list={['order-1 font-display text-[length:var(--text-h1)] font-medium leading-none tracking-[-0.03em] tabular-nums', invert ? 'text-on-ink' : 'text-ink']}>
+        {('raw' in m && m.raw)
+          ? <span>{m.value}{m.suffix}</span>
+          : <span aria-label={`${fmt(m.value)}${m.suffix}`}><span aria-hidden="true" data-count={m.value} data-suffix={m.suffix}>{fmt(m.value)}{m.suffix}</span></span>}
+      </dd>
+    </div>
+  ))}
+</dl>

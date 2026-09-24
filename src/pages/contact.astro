@@ -116,6 +116,8 @@ const options = [
 </Base>
 
 <script>
+  // Re-bind on every ClientRouter navigation
+  document.addEventListener('astro:page-load', () => {
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
   const status = document.getElementById('form-status');
   if (form) {
@@ -145,4 +147,5 @@ const options = [
       window.location.href = `mailto:hello@thinksolv.com?subject=${subject}&body=${body}`;
     });
   }
+  });
 </script>

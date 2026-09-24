@@ -9,9 +9,9 @@ const { id, tone = 'base', class: className = '', contain = true } = Astro.props
 const tones = {
   base: 'bg-bg text-ink',
   surface: 'bg-surface-2 text-ink',
-  ink: 'bg-ink text-[#f3ece8]',
+  ink: 'bg-ink text-on-ink',
 };
 ---
-<section id={id} class:list={['py-16 md:py-24 lg:py-28', tones[tone], className]}>
+<section id={id} class:list={['py-[var(--section-y)]', tones[tone], className]}>
   {contain ? <div class="container-x"><slot /></div> : <slot />}
 </section>

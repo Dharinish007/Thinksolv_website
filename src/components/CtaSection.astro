@@ -10,20 +10,46 @@ const {
   intro = 'Tell us what slows your team down. We’ll help you remove the work before it reaches anyone.',
 } = Astro.props;
 ---
-<section class="bg-ink text-[#f3ece8]">
-  <div class="container-x py-20 md:py-28">
-    <div class="reveal relative overflow-hidden rounded-[calc(var(--radius)*1.4)] border border-white/10 bg-[#221a16] px-6 py-14 text-center md:px-12 md:py-20">
-      <div class="grid-motif pointer-events-none absolute inset-0 opacity-40"></div>
-      <div class="relative mx-auto max-w-2xl">
-        <h2 class="text-[length:var(--text-h1)] font-semibold leading-[1.08] text-[#f7f1ee]">{title}</h2>
-        <p class="mx-auto mt-5 max-w-xl text-base leading-relaxed text-[#c6b8b0] md:text-lg">{intro}</p>
-        <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+<section class="cta-band relative isolate overflow-hidden bg-ink py-[var(--section-y)] text-on-ink" data-cta>
+  <div class="cta-glow pointer-events-none absolute -z-10" aria-hidden="true"></div>
+  <div class="container-x">
+    <div class="grid gap-10 lg:grid-cols-12 lg:items-end">
+      <div class="lg:col-span-8">
+        <p class="reveal meta mb-6 text-on-ink-muted">Start a conversation</p>
+        <h2 class="reveal text-[length:var(--text-h1)] leading-[1.04] text-on-ink">{title}</h2>
+      </div>
+      <div class="reveal lg:col-span-4" style="--reveal-delay:100ms">
+        <p class="text-base leading-relaxed text-on-ink-muted md:text-lg">{intro}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-3">
           <Button href={cta.primary.href} variant="primary">{cta.primary.label}</Button>
-          <a href={cta.secondary.href} class="inline-flex items-center gap-2 rounded-full border border-white/20 px-5 py-2.5 text-sm font-medium text-[#f3ece8] transition-colors hover:border-white/50">
-            {cta.secondary.label}
-          </a>
+          <Button href={cta.secondary.href} variant="secondary" onInk>{cta.secondary.label}</Button>
         </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .cta-glow {
+    right: -20rem;
+    bottom: -28rem;
+    width: 60rem;
+    height: 60rem;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(224 72 60 / 0.22), rgb(224 72 60 / 0.06) 55%, transparent);
+  }
+  /* One slow drift when the band is on screen, then it rests (CSS scroll-driven; static elsewhere) */
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cta-glow {
+        animation: cta-drift linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 60%;
+      }
+    }
+  }
+  @keyframes cta-drift {
+    from { transform: translate(8rem, 6rem) scale(0.9); opacity: 0.4; }
+    to { transform: none; opacity: 1; }
+  }
+</style>

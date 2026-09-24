@@ -1,0 +1,152 @@
+---
+// "Ask ThinkSolv" — Tier A guided product finder. No backend: matches the visitor's words against
+// the product collection (ui.ts) and routes to a product, Services, or a human. Persists across pages.
+import { getCollection } from 'astro:content';
+import Icon from './Icon.astro';
+
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+const data = products.map((p) => ({
+  id: p.id,
+  name: p.data.name,
+  tagline: p.data.tagline,
+  text: [p.data.summary, p.data.problem, p.data.category, p.data.platform, ...p.data.features.map((f) => f.title)].join(' '),
+}));
+const chips = ['Convert Docs to PDF', 'Publish Docs to WordPress', 'Convert a whole folder', 'Something custom'];
+---
+<div id="assistant" class="assistant" transition:persist="assistant">
+  <button
+    type="button"
+    class="assistant-launcher inline-flex h-12 items-center gap-2 rounded-full bg-ink pl-3 pr-3 text-sm font-medium text-on-ink shadow-float sm:pr-5"
+    aria-expanded="false"
+    aria-controls="assistant-panel"
+    data-assistant-launcher
+  >
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true" class="text-accent">
+      <g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M16 3.5v3"/><path d="M16 25.5v3"/><path d="M3.5 16h3"/><path d="M25.5 16h3"/><path d="m7.2 7.2 2.1 2.1"/><path d="m22.7 22.7 2.1 2.1"/><path d="m24.8 7.2-2.1 2.1"/><path d="m9.3 22.7-2.1 2.1"/></g>
+      <circle cx="16" cy="16" r="6.4" stroke="currentColor" stroke-width="2"/><path d="M13 16.4a3 3 0 0 0 6 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <span class="sr-only sm:not-sr-only">Ask ThinkSolv</span>
+  </button>
+
+  <div
+    id="assistant-panel"
+    class="assistant-panel flex flex-col overflow-hidden rounded-[var(--radius-panel)] border border-line bg-surface shadow-float"
+    role="dialog"
+    aria-modal="false"
+    aria-labelledby="assistant-title"
+    inert
+    data-assistant-panel
+  >
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <span class="inline-flex h-9 w-9 items-center justify-center rounded-full bg-accent-soft text-accent"><Icon name="spark" size={18} /></span>
+      <div class="flex-1">
+        <p id="assistant-title" class="font-display text-base font-medium text-ink">Ask ThinkSolv</p>
+        <p class="text-xs text-muted">Guided product finder</p>
+      </div>
+      <button type="button" class="inline-flex h-9 w-9 items-center justify-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-ink" aria-label="Close assistant" data-assistant-close>
+        <Icon name="close" size={18} />
+      </button>
+    </div>
+
+    <div class="flex-1 space-y-3 overflow-y-auto px-5 py-5" aria-live="polite" data-assistant-log>
+      <div class="assistant-msg is-bot">Hi! Tell me what you’re trying to do with your documents, and I’ll point you to the right tool — or to our team.</div>
+    </div>
+
+    <div class="flex flex-wrap gap-2 px-5 pb-3" data-assistant-chips>
+      {chips.map((c) => (
+        <button type="button" class="rounded-full border border-line px-3 py-1.5 text-xs text-ink-soft transition-colors hover:border-accent/40 hover:text-ink" data-assistant-chip>{c}</button>
+      ))}
+    </div>
+
+    <form class="flex items-center gap-2 border-t border-line p-3" data-assistant-form>
+      <label for="assistant-input" class="sr-only">Describe your workflow</label>
+      <input
+        id="assistant-input"
+        type="text"
+        autocomplete="off"
+        maxlength="200"
+        placeholder="e.g. turn Docs into Markdown"
+        class="w-full rounded-full border border-line bg-bg px-4 py-2.5 text-sm text-ink outline-none transition-colors placeholder:text-muted focus:border-accent"
+        data-assistant-input
+      />
+      <button type="submit" class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent text-white transition-colors hover:bg-accent-hover" aria-label="Send">
+        <Icon name="arrow" size={16} />
+      </button>
+    </form>
+  </div>
+
+  <script type="application/json" data-assistant-data set:html={JSON.stringify(data)} />
+</div>
+
+<style is:global>
+  .assistant {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.75rem;
+  }
+  .assistant-launcher {
+    transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out), background-color var(--dur-fast);
+  }
+  .assistant-launcher:hover { background-color: var(--color-ink-3); }
+  html.js .assistant:not(.is-ready) .assistant-launcher {
+    opacity: 0;
+    transform: translateY(12px);
+    pointer-events: none;
+  }
+  .assistant-panel {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.75rem);
+    width: min(380px, calc(100vw - 2rem));
+    height: min(520px, calc(100dvh - 7rem));
+    transform-origin: bottom right;
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out), visibility 0s linear var(--dur-base);
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+    visibility: hidden;
+  }
+  .assistant.is-open .assistant-panel {
+    opacity: 1;
+    transform: none;
+    visibility: visible;
+    transition-delay: 0s;
+  }
+  .assistant-msg {
+    max-width: 88%;
+    border-radius: 1rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    animation: msg-in 300ms var(--ease-out);
+  }
+  .assistant-msg.is-bot { background: var(--color-surface-2); color: var(--color-ink); border-bottom-left-radius: 0.25rem; }
+  .assistant-msg.is-user { margin-left: auto; background: var(--color-ink); color: var(--color-on-ink); border-bottom-right-radius: 0.25rem; }
+  .assistant-msg a.assistant-card {
+    display: block;
+    margin-top: 0.5rem;
+    border: 1px solid var(--color-line);
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    padding: 0.625rem 0.75rem;
+    transition: border-color var(--dur-fast);
+  }
+  .assistant-msg a.assistant-card:hover { border-color: var(--color-accent); }
+  .assistant-typing { display: inline-flex; gap: 4px; }
+  .assistant-typing span {
+    width: 6px; height: 6px; border-radius: 999px; background: var(--color-muted);
+    animation: typing 900ms var(--ease-in-out) infinite;
+  }
+  .assistant-typing span:nth-child(2) { animation-delay: 150ms; }
+  .assistant-typing span:nth-child(3) { animation-delay: 300ms; }
+  @keyframes typing { 0%, 100% { opacity: 0.3; transform: none; } 50% { opacity: 1; transform: translateY(-2px); } }
+  @keyframes msg-in { from { opacity: 0; transform: translateY(6px); } }
+  @media (max-width: 639px) {
+    .assistant { right: 0.75rem; bottom: 0.75rem; }
+    .assistant-panel { width: calc(100vw - 1.5rem); height: min(560px, calc(100dvh - 6rem)); }
+  }
+</style>

@@ -1,45 +1,55 @@
 ---
-import { nav, cta } from '@/data/site';
+import { nav, cta, site } from '@/data/site';
 import Logo from './Logo.astro';
 import Icon from './Icon.astro';
+import Button from './Button.astro';
 const path = Astro.url.pathname;
 const isActive = (href: string) =>
   href === '/' ? path === '/' : path.startsWith(href);
 ---
-<header id="site-header" class="fixed inset-x-0 top-0 z-50 transition-all duration-300">
-  <div class="container-x">
+<header id="site-header" class="fixed inset-x-0 top-0 z-50" transition:animate="none">
+  <div class="container-x transition-transform duration-[var(--dur-base)] ease-in-out" data-header-bar>
     <nav
-      class="mt-3 flex items-center justify-between rounded-full border border-transparent px-4 py-2.5 transition-all duration-300"
+      class="mt-3 flex items-center justify-between rounded-full border border-transparent py-2 pl-4 pr-2 transition-[background-color,border-color,box-shadow] duration-300"
       aria-label="Primary"
       data-nav
     >
       <a href="/" class="rounded-full" aria-label="ThinkSolv home"><Logo /></a>
 
-      <ul class="hidden items-center gap-1 md:flex">
+      <ul class="relative hidden items-center md:flex" data-nav-list>
+        <span
+          class="pointer-events-none absolute left-0 top-0 h-full rounded-full bg-ink/[0.06] opacity-0 transition-[transform,width,opacity] duration-[var(--dur-base)] ease-in-out"
+          aria-hidden="true"
+          data-nav-pill
+        ></span>
         {nav.map((item) => (
           <li>
             <a
               href={item.href}
               class:list={[
-                'relative rounded-full px-3.5 py-2 text-sm transition-colors',
-                isActive(item.href) ? 'text-accent' : 'text-ink-soft hover:text-ink',
+                'relative z-10 block rounded-full px-2.5 py-2 text-sm lg:px-3.5 transition-colors duration-[var(--dur-fast)]',
+                isActive(item.href) ? 'font-medium text-ink' : 'text-ink-soft hover:text-ink',
               ]}
               aria-current={isActive(item.href) ? 'page' : undefined}
-            >
-              {item.label}
-              {isActive(item.href) && (
-                <span class="absolute inset-x-3.5 -bottom-0.5 h-0.5 rounded-full bg-accent"></span>
-              )}
-            </a>
+              data-nav-link
+            >{item.label}</a>
           </li>
         ))}
       </ul>
 
       <div class="flex items-center gap-2">
-        <a
-          href={cta.primary.href}
-          class="hidden rounded-full bg-accent px-4 py-2 text-sm font-medium text-white transition-all hover:bg-accent-hover hover:-translate-y-0.5 md:inline-flex"
-        >{cta.primary.label}</a>
+        <button
+          type="button"
+          class="hidden h-9 items-center gap-2 rounded-full border border-line px-3 text-sm text-muted transition-colors hover:border-line-strong hover:text-ink md:inline-flex"
+          aria-label="Search the site"
+          aria-haspopup="dialog"
+          data-cmdk-open
+        >
+          <Icon name="search" size={16} />
+          <span class="hidden lg:inline">Search</span>
+          <kbd class="hidden rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-muted lg:inline" data-kbd>⌘K</kbd>
+        </button>
+        <div class="hidden md:block"><Button href={cta.primary.href} class="!px-4 !py-2">{cta.primary.label}</Button></div>
         <button
           type="button"
           class="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden"
@@ -53,74 +63,90 @@ const isActive = (href: string) =>
       </div>
     </nav>
   </div>
-
-  <!-- Mobile menu -->
-  <div
-    id="mobile-menu"
-    class="fixed inset-0 z-50 hidden bg-bg/98 backdrop-blur-sm md:hidden"
-    data-menu-panel
-  >
-    <div class="container-x flex h-full flex-col">
-      <div class="mt-3 flex items-center justify-between px-4 py-2.5">
-        <Logo />
-        <button
-          type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink"
-          aria-label="Close menu"
-          data-menu-close
-        >
-          <Icon name="close" />
-        </button>
-      </div>
-      <ul class="mt-6 flex flex-col gap-1 px-2">
-        {nav.map((item) => (
-          <li>
-            <a
-              href={item.href}
-              class:list={[
-                'block rounded-2xl px-4 py-4 text-2xl font-display font-medium',
-                isActive(item.href) ? 'text-accent' : 'text-ink',
-              ]}
-            >{item.label}</a>
-          </li>
-        ))}
-      </ul>
-      <a
-        href={cta.primary.href}
-        class="mt-auto mb-8 inline-flex items-center justify-center rounded-full bg-accent px-6 py-4 text-base font-medium text-white"
-      >{cta.primary.label}</a>
-    </div>
-  </div>
 </header>
 
-<script>
-  const header = document.getElementById('site-header');
-  const navEl = header?.querySelector('[data-nav]');
-  const onScroll = () => {
-    if (!navEl) return;
-    if (window.scrollY > 12) {
-      navEl.classList.add('bg-surface/85', 'backdrop-blur-md', 'border-line', 'shadow-soft');
-    } else {
-      navEl.classList.remove('bg-surface/85', 'backdrop-blur-md', 'border-line', 'shadow-soft');
-    }
-  };
-  onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+<!-- Mobile menu: native modal dialog (focus trap, Escape, inert page for free) -->
+<dialog id="mobile-menu" class="mobile-sheet md:hidden" aria-label="Menu" data-lock-scroll data-menu-panel>
+  <div class="container-x flex h-full flex-col">
+    <div class="mt-3 flex items-center justify-between py-2 pl-4 pr-2 [&_span]:text-on-ink">
+      <Logo />
+      <button
+        type="button"
+        class="inline-flex h-10 w-10 items-center justify-center rounded-full text-on-ink"
+        aria-label="Close menu"
+        data-menu-close
+      >
+        <Icon name="close" />
+      </button>
+    </div>
+    <ul class="mt-8 flex flex-col px-2">
+      {nav.map((item, i) => (
+        <li style={`--i:${i}`}>
+          <a
+            href={item.href}
+            class:list={[
+              'flex items-baseline gap-4 border-b border-white/10 px-2 py-4 font-display text-3xl',
+              isActive(item.href) ? 'text-accent' : 'text-on-ink',
+            ]}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+          ><span class="meta text-on-ink-muted">{String(i + 1).padStart(2, '0')}</span>{item.label}</a>
+        </li>
+      ))}
+    </ul>
+    <div class="mt-auto mb-8 flex flex-col gap-3 px-2" style={`--i:${nav.length}`}>
+      <button type="button" class="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 px-6 py-3.5 text-sm text-on-ink" data-cmdk-open>
+        <Icon name="search" size={16} />Search products & pages
+      </button>
+      <a href={cta.primary.href} class="inline-flex items-center justify-center rounded-full bg-accent px-6 py-4 text-base font-medium text-white">{cta.primary.label}</a>
+      <a href={`mailto:${site.email}`} class="mt-2 text-center text-sm text-on-ink-muted">{site.email}</a>
+    </div>
+  </div>
+</dialog>
 
-  const panel = document.querySelector('[data-menu-panel]');
-  const toggle = document.querySelector('[data-menu-toggle]');
-  const open = () => {
-    panel?.classList.remove('hidden');
-    toggle?.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-  };
-  const close = () => {
-    panel?.classList.add('hidden');
-    toggle?.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  };
-  toggle?.addEventListener('click', open);
-  document.querySelector('[data-menu-close]')?.addEventListener('click', close);
-  panel?.querySelectorAll('a').forEach((a) => a.addEventListener('click', close));
-  document.addEventListener('keydown', (e) => e.key === 'Escape' && close());
-</script>
+<style is:global>
+  #site-header [data-header-bar].is-hidden { transform: translateY(-130%); }
+  #site-header [data-nav].is-scrolled {
+    background-color: rgb(255 255 255 / 0.85);
+    border-color: var(--color-line);
+    box-shadow: var(--shadow-float);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .mobile-sheet {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: var(--color-ink);
+    color: var(--color-on-ink);
+    clip-path: circle(0 at var(--cx, 92%) var(--cy, 2.5rem));
+    transition: clip-path 420ms var(--ease-in-out), display 420ms allow-discrete, overlay 420ms allow-discrete;
+  }
+  .mobile-sheet[open] { clip-path: circle(150% at var(--cx, 92%) var(--cy, 2.5rem)); }
+  @starting-style {
+    .mobile-sheet[open] { clip-path: circle(0 at var(--cx, 92%) var(--cy, 2.5rem)); }
+  }
+  .mobile-sheet::backdrop { background: transparent; }
+  .mobile-sheet li,
+  .mobile-sheet > div > div:last-child {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 400ms var(--ease-out), transform 400ms var(--ease-out);
+  }
+  .mobile-sheet[open] li,
+  .mobile-sheet[open] > div > div:last-child {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(140ms + var(--i, 0) * 60ms);
+  }
+  @starting-style {
+    .mobile-sheet[open] li,
+    .mobile-sheet[open] > div > div:last-child { opacity: 0; transform: translateY(12px); }
+  }
+</style>

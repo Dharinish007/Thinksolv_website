@@ -1,0 +1,114 @@
+---
+import { getCollection } from 'astro:content';
+import { nav, site } from '@/data/site';
+import Icon from './Icon.astro';
+
+const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
+
+type Item = { label: string; hint?: string; href?: string; action?: string; icon: string; keywords?: string };
+const groups: { title: string; items: Item[] }[] = [
+  { title: 'Pages', items: nav.map((n) => ({ label: n.label, href: n.href, icon: 'arrow' })) },
+  {
+    title: 'Products',
+    items: products.map((p) => ({
+      label: p.data.name,
+      hint: p.data.tagline,
+      href: `/products/${p.id}`,
+      icon: p.data.icon,
+      keywords: `${p.data.category} ${p.data.platform}`,
+    })),
+  },
+  {
+    title: 'Actions',
+    items: [
+      { label: 'Ask ThinkSolv', hint: 'Find the right tool for your workflow', action: 'assistant', icon: 'spark', keywords: 'help chat recommend' },
+      { label: 'Talk to us', hint: 'Start a conversation with the team', href: '/contact', icon: 'mail', keywords: 'contact sales' },
+      { label: 'Email us', hint: site.email, href: `mailto:${site.email}`, icon: 'mail', keywords: 'contact' },
+    ],
+  },
+];
+---
+<dialog id="cmdk" class="cmdk" aria-label="Search ThinkSolv" data-lock-scroll>
+  <div class="flex h-full flex-col">
+    <div class="flex items-center gap-3 border-b border-line px-5 py-4">
+      <Icon name="search" size={18} class="shrink-0 text-muted" />
+      <input
+        type="text"
+        class="w-full bg-transparent text-base text-ink outline-none placeholder:text-muted"
+        placeholder="Search pages, products, actions…"
+        aria-label="Search"
+        aria-controls="cmdk-list"
+        aria-autocomplete="list"
+        autocomplete="off"
+        spellcheck="false"
+        data-cmdk-input
+      />
+      <button type="button" class="meta shrink-0 rounded border border-line px-1.5 py-1 text-[0.65rem] text-muted" data-cmdk-close aria-label="Close search">Esc</button>
+    </div>
+
+    <div id="cmdk-list" class="flex-1 overflow-y-auto px-3 py-3" role="listbox" aria-label="Results">
+      {groups.map((g) => (
+        <div class="mb-3" data-cmdk-group>
+          <p class="meta px-3 py-2 text-muted">{g.title}</p>
+          {g.items.map((it) => (
+            <a
+              href={it.href ?? '#'}
+              role="option"
+              class="cmdk-item flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm text-ink"
+              data-cmdk-item
+              data-search={`${it.label} ${it.hint ?? ''} ${it.keywords ?? ''}`.toLowerCase()}
+              {...(it.action ? { 'data-cmdk-action': it.action } : {})}
+            >
+              <span class="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-line text-ink-soft"><Icon name={it.icon} size={16} /></span>
+              <span class="min-w-0 flex-1">
+                <span class="block font-medium">{it.label}</span>
+                {it.hint && <span class="block truncate text-xs text-muted">{it.hint}</span>}
+              </span>
+              <Icon name="arrow" size={14} class="cmdk-arrow shrink-0 text-muted" />
+            </a>
+          ))}
+        </div>
+      ))}
+      <p class="hidden px-3 py-8 text-center text-sm text-muted" data-cmdk-empty>No results. Try “PDF” or “WordPress”.</p>
+    </div>
+
+    <div class="flex items-center gap-4 border-t border-line px-5 py-3 text-xs text-muted">
+      <span><kbd class="font-mono">↑↓</kbd> navigate</span>
+      <span><kbd class="font-mono">↵</kbd> open</span>
+      <span><kbd class="font-mono">esc</kbd> close</span>
+    </div>
+  </div>
+</dialog>
+
+<style is:global>
+  .cmdk {
+    position: fixed;
+    inset: 0.75rem 0.75rem 0.75rem auto;
+    width: min(420px, calc(100vw - 1.5rem));
+    height: auto;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-panel);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-float);
+    opacity: 0;
+    transform: translateX(16px);
+    transition: opacity var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out),
+      display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete;
+  }
+  .cmdk[open] { opacity: 1; transform: none; }
+  @starting-style { .cmdk[open] { opacity: 0; transform: translateX(16px); } }
+  .cmdk::backdrop {
+    background: rgb(27 21 18 / 0);
+    transition: background var(--dur-base) var(--ease-out), display var(--dur-base) allow-discrete, overlay var(--dur-base) allow-discrete;
+  }
+  .cmdk[open]::backdrop { background: rgb(27 21 18 / 0.2); }
+  @starting-style { .cmdk[open]::backdrop { background: rgb(27 21 18 / 0); } }
+
+  .cmdk-item[aria-selected='true'] { background: var(--color-surface-2); }
+  .cmdk-item[aria-selected='true'] .cmdk-arrow { color: var(--color-accent); }
+  .cmdk-item .cmdk-arrow { transition: transform var(--dur-fast) var(--ease-out); }
+  .cmdk-item[aria-selected='true'] .cmdk-arrow { transform: translateX(2px); }
+</style>

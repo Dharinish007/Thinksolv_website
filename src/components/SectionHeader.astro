@@ -1,20 +1,34 @@
 ---
 interface Props {
   eyebrow?: string;
+  number?: string;
   title: string;
   intro?: string;
   align?: 'left' | 'center';
+  layout?: 'stacked' | 'split';
   invert?: boolean;
 }
-const { eyebrow, title, intro, align = 'left', invert = false } = Astro.props;
-const wrap = align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl';
+const { eyebrow, number, title, intro, align = 'left', layout = 'stacked', invert = false } = Astro.props;
+const hasAction = Astro.slots.has('default');
+
+const eyebrowText = eyebrow && (number ? `${number} — ${eyebrow}` : eyebrow);
 ---
-<div class:list={['reveal', wrap]}>
-  {eyebrow && (
-    <p class:list={['mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em]', invert ? 'text-accent' : 'text-accent']}>
-      <span class="h-1 w-1 rounded-full bg-accent"></span>{eyebrow}
-    </p>
-  )}
-  <h2 class:list={['text-[length:var(--text-h2)] font-semibold leading-[1.1]', invert && 'text-[#f6efec]']}>{title}</h2>
-  {intro && <p class:list={['mt-4 text-base leading-relaxed md:text-lg', invert ? 'text-[#cdbfb8]' : 'text-muted']}>{intro}</p>}
-</div>
+{layout === 'split' ? (
+  <div class="grid gap-6 md:grid-cols-12 md:items-end md:gap-8">
+    <div class="reveal md:col-span-6 lg:col-span-5">
+      {eyebrow && <p class:list={['meta mb-4', invert ? 'text-on-ink-muted' : 'text-muted']}>{eyebrowText}</p>}
+      <h2 class:list={['text-[length:var(--text-h2)] leading-[1.08]', invert && 'text-on-ink']}>{title}</h2>
+    </div>
+    <div class="reveal md:col-span-6 lg:col-span-6 lg:col-start-7" style="--reveal-delay:80ms">
+      {intro && <p class:list={['text-base leading-relaxed md:text-lg', invert ? 'text-on-ink-muted' : 'text-muted']}>{intro}</p>}
+      {hasAction && <div class="mt-5"><slot /></div>}
+    </div>
+  </div>
+) : (
+  <div class:list={['reveal', align === 'center' ? 'mx-auto max-w-2xl text-center' : 'max-w-2xl']}>
+    {eyebrow && <p class:list={['meta mb-4', invert ? 'text-on-ink-muted' : 'text-muted']}>{eyebrowText}</p>}
+    <h2 class:list={['text-[length:var(--text-h2)] leading-[1.08]', invert && 'text-on-ink']}>{title}</h2>
+    {intro && <p class:list={['mt-4 text-base leading-relaxed md:text-lg', invert ? 'text-on-ink-muted' : 'text-muted']}>{intro}</p>}
+    {hasAction && <div class="mt-6"><slot /></div>}
+  </div>
+)}

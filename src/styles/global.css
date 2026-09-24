@@ -2,14 +2,19 @@
 
 /* ---- ThinkSolv design tokens (Tailwind v4 @theme) ---- */
 @theme {
-  /* Warm neutral base + single coral-red accent */
+  /* Warm neutral base + single coral-red accent (reserved for action / result) */
   --color-bg: #fdf8f5;
   --color-surface: #ffffff;
   --color-surface-2: #fbf3ee;
   --color-ink: #1b1512;
+  --color-ink-2: #221a16;
+  --color-ink-3: #2c231e;
   --color-ink-soft: #4a3f39;
   --color-muted: #786c65;
+  --color-on-ink: #f3ece8;
+  --color-on-ink-muted: #bcaea6;
   --color-line: #ece1da;
+  --color-line-strong: #dccfc7;
   --color-accent: #e0483c;
   --color-accent-hover: #c53a30;
   --color-accent-soft: #fbe7e2;
@@ -17,18 +22,35 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, Helvetica, Arial, sans-serif;
   --font-display: 'Instrument Sans', var(--font-sans);
+  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   /* Fluid display scale */
-  --text-hero: clamp(2.6rem, 1.6rem + 4.2vw, 5rem);
-  --text-h1: clamp(2.1rem, 1.5rem + 2.6vw, 3.5rem);
-  --text-h2: clamp(1.6rem, 1.25rem + 1.6vw, 2.4rem);
-  --text-h3: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
+  --text-hero: clamp(2.8rem, 1.5rem + 5vw, 5.6rem);
+  --text-h1: clamp(2.3rem, 1.5rem + 3vw, 3.75rem);
+  --text-h2: clamp(1.75rem, 1.3rem + 1.8vw, 2.6rem);
+  --text-h3: clamp(1.2rem, 1.1rem + 0.5vw, 1.4rem);
+  --text-lead: clamp(1.05rem, 1rem + 0.3vw, 1.2rem);
 
-  --radius: 0.9rem;
+  --radius: 0.875rem;
+  --radius-panel: 1.5rem;
+
   --shadow-soft: 0 1px 2px rgba(27, 21, 18, 0.04),
     0 8px 24px -12px rgba(27, 21, 18, 0.12);
   --shadow-lift: 0 2px 4px rgba(27, 21, 18, 0.05),
-    0 18px 40px -18px rgba(27, 21, 18, 0.18);
+    0 18px 40px -18px rgba(27, 21, 18, 0.2);
+  --shadow-float: inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    0 1px 2px rgba(27, 21, 18, 0.06), 0 24px 48px -20px rgba(27, 21, 18, 0.28);
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+:root {
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-reveal: 640ms;
+  --section-y: clamp(5rem, 3.5rem + 5vw, 9rem);
+  --section-y-sm: clamp(3.5rem, 2.5rem + 3vw, 5.5rem);
 }
 
 @layer base {
@@ -48,7 +70,8 @@
 
   h1, h2, h3, h4 {
     font-family: var(--font-display);
-    letter-spacing: -0.02em;
+    font-weight: 500;
+    letter-spacing: -0.025em;
     text-wrap: balance;
     color: var(--color-ink);
   }
@@ -66,6 +89,9 @@
     color: #fff;
   }
 
+  /* Modal dialogs lock page scroll without JS */
+  html:has(dialog[open][data-lock-scroll]) { overflow: hidden; }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after {
@@ -78,6 +104,15 @@
 }
 
 @layer components {
+  /* Mono metadata label */
+  .meta {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
   /* Brand grid motif — faint, decorative only */
   .grid-motif {
     background-image:
@@ -88,31 +123,83 @@
     mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
   }
 
-  /* Scroll reveal — JS adds .is-visible; reduced-motion shows instantly */
+  /* Scroll reveal — hidden only when JS is running (html.js); JS adds .is-visible */
   .reveal {
-    opacity: 0;
-    transform: translateY(16px);
-    transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: opacity var(--dur-reveal) var(--ease-out),
+      transform var(--dur-reveal) var(--ease-out);
     transition-delay: var(--reveal-delay, 0ms);
-    will-change: opacity, transform;
   }
-  .reveal.is-visible {
-    opacity: 1;
-    transform: none;
+  html.js .reveal:not(.is-visible) {
+    opacity: 0;
+    transform: translateY(12px);
   }
   @media (prefers-reduced-motion: reduce) {
-    .reveal { opacity: 1; transform: none; }
+    html.js .reveal:not(.is-visible) { transform: none; }
+    .reveal { transition: opacity 200ms linear !important; }
+  }
+
+  /* Masked line reveal for page H1s: <h1 class="line-reveal"><span class="line"><span>…</span></span></h1>
+     Plays when an ancestor [data-intro] gets .is-in */
+  .line-reveal .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.1em;
+    margin-bottom: -0.1em;
+  }
+  .line-reveal .line > span {
+    display: inline-block;
+    transition: transform 900ms var(--ease-out);
+    transition-delay: calc(120ms + var(--i, 0) * 70ms);
+  }
+  html.js [data-intro]:not(.is-in) .line-reveal .line > span { transform: translateY(110%); }
+
+  /* Intro fade items inside [data-intro]; set --d for delay */
+  .intro-fade {
+    transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+    transition-delay: var(--d, 0ms);
+  }
+  html.js [data-intro]:not(.is-in) .intro-fade {
+    opacity: 0;
+    transform: translateY(10px);
   }
 
   .link-underline {
-    background-image: linear-gradient(var(--color-accent), var(--color-accent));
-    background-size: 0% 2px;
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1px;
     background-position: 0 100%;
     background-repeat: no-repeat;
-    transition: background-size 0.3s ease;
+    transition: background-size var(--dur-base) var(--ease-out);
   }
-  .link-underline:hover { background-size: 100% 2px; }
+  .link-underline:hover { background-size: 100% 1px; }
+
+  /* Cursor spotlight — JS writes --mx/--my; visible only on fine pointers */
+  .spotlight { position: relative; isolation: isolate; }
+  .spotlight::before,
+  .spotlight::after {
+    content: '';
+    position: absolute;
+    pointer-events: none;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity var(--dur-base) var(--ease-out);
+  }
+  .spotlight::before {
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), rgb(224 72 60 / 0.07), transparent 60%);
+  }
+  .spotlight::after {
+    inset: -1px;
+    padding: 1px;
+    background: radial-gradient(240px circle at var(--mx, 50%) var(--my, 50%), rgb(224 72 60 / 0.5), transparent 70%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .spotlight:hover::before,
+    .spotlight:hover::after { opacity: 1; }
+  }
 }
 
 /* Shared container */

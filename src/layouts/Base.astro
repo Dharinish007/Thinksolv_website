@@ -1,7 +1,11 @@
 ---
 import '@/styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import Preloader from '@/components/Preloader.astro';
+import CommandPalette from '@/components/CommandPalette.astro';
+import Assistant from '@/components/Assistant.astro';
 import { site } from '@/data/site';
 
 interface Props {
@@ -64,65 +68,42 @@ const orgJsonLd = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Instrument+Sans:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
     />
+
+    <!-- JS flag + first-visit preloader flag, set before paint.
+         Failsafe removes `preload` if motion.ts never runs. -->
+    <script is:inline>
+      (function () {
+        var h = document.documentElement;
+        h.classList.add('js');
+        try {
+          if (!sessionStorage.getItem('ts-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            h.classList.add('preload');
+            sessionStorage.setItem('ts-intro', '1');
+            setTimeout(function () { h.classList.remove('preload'); }, 1300);
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <ClientRouter />
 
     <script type="application/ld+json" set:html={JSON.stringify(orgJsonLd)} />
   </head>
   <body>
+    <Preloader />
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-accent focus:px-4 focus:py-2 focus:text-white">Skip to content</a>
     <Header />
     <main id="main">
       <slot />
     </main>
     <Footer />
+    <CommandPalette />
+    <Assistant />
 
     <script>
-      // Scroll reveal (respects reduced-motion via CSS fallback)
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      const els = document.querySelectorAll('.reveal');
-      if (reduce || !('IntersectionObserver' in window)) {
-        els.forEach((el) => el.classList.add('is-visible'));
-      } else {
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((e) => {
-              if (e.isIntersecting) {
-                e.target.classList.add('is-visible');
-                io.unobserve(e.target);
-              }
-            });
-          },
-          { rootMargin: '0px 0px -8% 0px', threshold: 0.15 }
-        );
-        els.forEach((el) => io.observe(el));
-      }
-
-      // Count-up metrics
-      const counters = document.querySelectorAll<HTMLElement>('[data-count]');
-      const fmt = (n: number) => n.toLocaleString('en-US');
-      const run = (el: HTMLElement) => {
-        const target = Number(el.dataset.count || '0');
-        const suffix = el.dataset.suffix || '';
-        if (reduce) { el.textContent = fmt(target) + suffix; return; }
-        const dur = 1400;
-        const start = performance.now();
-        const tick = (now: number) => {
-          const p = Math.min((now - start) / dur, 1);
-          const eased = 1 - Math.pow(1 - p, 3);
-          el.textContent = fmt(Math.round(target * eased)) + suffix;
-          if (p < 1) requestAnimationFrame(tick);
-        };
-        requestAnimationFrame(tick);
-      };
-      if (counters.length) {
-        const cio = new IntersectionObserver((entries) => {
-          entries.forEach((e) => {
-            if (e.isIntersecting) { run(e.target as HTMLElement); cio.unobserve(e.target); }
-          });
-        }, { threshold: 0.6 });
-        counters.forEach((c) => cio.observe(c));
-      }
+      import '@/scripts/motion';
+      import '@/scripts/ui';
     </script>
   </body>
 </html>
