@@ -29,7 +29,10 @@ const lg = size === 'lg';
 
   <h3 class:list={['font-medium', lg ? 'mt-8 text-[length:var(--text-h2)] leading-[1.1]' : 'mt-8 text-[length:var(--text-h3)]']}><span class="inline-block" transition:name={`product-title-${id}`}>{data.name}</span></h3>
   <p class:list={['mt-2 flex-1 leading-relaxed text-muted', lg ? 'max-w-md text-base' : 'text-sm']}>{lg ? data.tagline : data.summary}</p>
-  <span class="mt-6 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
+  <p class="mt-5 inline-flex items-center gap-2 text-xs text-muted">
+    <Icon name={data.platform === 'Chrome Extension' ? 'chrome' : 'workspace'} size={14} />{data.platform}
+  </p>
+  <span class="mt-3 inline-flex items-center gap-1.5 text-sm font-medium text-ink">
     View product
     <Icon name="arrow" size={16} class="text-accent transition-transform duration-[var(--dur-base)] ease-out group-hover:translate-x-1" />
   </span>

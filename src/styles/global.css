@@ -189,6 +189,10 @@
   }
   .link-underline:hover { background-size: 100% 1px; }
 
+  /* Touch target: grows the tap area to ≥44px without changing layout or the underline position */
+  .tap { position: relative; }
+  .tap::after { content: ''; position: absolute; inset: -0.875rem -0.5rem; }
+
   /* Cursor spotlight — JS writes --mx/--my; visible only on fine pointers */
   .spotlight { position: relative; isolation: isolate; }
   .spotlight::before,

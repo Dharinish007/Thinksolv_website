@@ -41,6 +41,19 @@ export const metrics = [
   { value: 7, suffix: '', label: 'People on the team', confirm: false },
 ] as const;
 
+// DUMMY DATA — placeholder social proof for the home page. Every value is tracked in /DUMMY_DATA.md.
+// Replace with real figures before launch.
+export const proof = {
+  rating: { value: '4.8', outOf: '5', label: 'Average rating' }, // DUMMY
+  reviews: { value: '12,000+', label: 'Store reviews' }, // DUMMY
+  partner: { label: 'Google Cloud Partner' }, // DUMMY (badge image on the old site: /Google_Cloud_Partner_outline_horizontal.png)
+  testimonials: [
+    { quote: 'Converting a whole folder of reports used to take my afternoon. Now it is one click.', name: 'Priya Sharma', role: 'Operations Lead' }, // DUMMY
+    { quote: 'It sits inside Docs and just works. My team stopped asking how — they simply use it.', name: 'Daniel Okafor', role: 'Product Manager' }, // DUMMY
+    { quote: 'Clean output every time. No fixing formatting afterwards, which is the whole point.', name: 'Meera Nair', role: 'Content Editor' }, // DUMMY
+  ],
+} as const;
+
 // Company timeline — sourced from the provided brief.
 export const timeline = [
   { year: '2022', title: 'ThinkSolv begins', body: 'Founded as a one-person company with a first-principles approach to everyday software.' },

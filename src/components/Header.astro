@@ -14,7 +14,7 @@ const isActive = (href: string) =>
       aria-label="Primary"
       data-nav
     >
-      <a href="/" class="rounded-full" aria-label="ThinkSolv home"><Logo /></a>
+      <a href="/" class="tap rounded-full" aria-label="ThinkSolv home"><Logo /></a>
 
       <ul class="relative hidden items-center md:flex" data-nav-list>
         <span
@@ -49,10 +49,10 @@ const isActive = (href: string) =>
           <span class="sr-only lg:not-sr-only">Search</span>
           <kbd class="hidden rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-muted lg:inline" aria-hidden="true" data-kbd>⌘K</kbd>
         </button>
-        <div class="hidden md:block"><Button href={cta.primary.href} class="!px-4 !py-2">{cta.primary.label}</Button></div>
+        <div class="hidden md:block"><Button href={cta.primary.href} variant="secondary" class="!px-4 !py-2">{cta.primary.label}</Button></div>
         <button
           type="button"
-          class="inline-flex h-10 w-10 items-center justify-center rounded-full text-ink md:hidden"
+          class="inline-flex h-11 w-11 items-center justify-center rounded-full text-ink md:hidden"
           aria-label="Open menu"
           aria-expanded="false"
           aria-controls="mobile-menu"
@@ -72,7 +72,7 @@ const isActive = (href: string) =>
       <Logo />
       <button
         type="button"
-        class="inline-flex h-10 w-10 items-center justify-center rounded-full text-on-ink"
+        class="inline-flex h-11 w-11 items-center justify-center rounded-full text-on-ink"
         aria-label="Close menu"
         data-menu-close
       >

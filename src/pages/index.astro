@@ -10,7 +10,7 @@ import Button from '@/components/Button.astro';
 import HeroScene from '@/components/HeroScene.astro';
 import StepStory from '@/components/StepStory.astro';
 import Icon from '@/components/Icon.astro';
-import { cta } from '@/data/site';
+import { cta, proof } from '@/data/site';
 
 const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
 const featured = products.find((p) => p.data.featured) ?? products[0];
@@ -61,6 +61,7 @@ const services = [
         </div>
         <div class="mx-auto w-full max-w-lg sm:w-4/5 lg:col-span-5 lg:w-full lg:max-w-none">
           <HeroScene />
+          <p class="intro-fade mt-5 text-center text-sm text-muted" style="--d:900ms">One Google Doc in — PDF, Markdown or WordPress out.</p>
         </div>
       </div>
     </div>
@@ -68,7 +69,14 @@ const services = [
 
   <!-- PROOF -->
   <section class="pb-[var(--section-y-sm)]">
-    <div class="container-x"><StatBand /></div>
+    <div class="container-x">
+      <StatBand />
+      <ul class="reveal mt-6 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-muted">
+        <li><strong class="font-medium text-ink">{proof.rating.value}/{proof.rating.outOf}</strong> {proof.rating.label}</li>
+        <li><strong class="font-medium text-ink">{proof.reviews.value}</strong> {proof.reviews.label}</li>
+        <li class="inline-flex items-center gap-2"><Icon name="shield" size={16} class="text-accent" />{proof.partner.label}</li>
+      </ul>
+    </div>
   </section>
 
   <!-- WHAT WE DO -->
@@ -111,10 +119,24 @@ const services = [
     </div>
   </Section>
 
+  <!-- TESTIMONIALS (dummy data — see DUMMY_DATA.md) -->
+  <Section tone="surface">
+    <SectionHeader number="03" eyebrow="What users say" title="Tools people stop thinking about" align="center" />
+    <div class="mt-14 grid gap-5 md:grid-cols-3">
+      {proof.testimonials.map((t, i) => (
+        <figure class="reveal flex flex-col justify-between rounded-[var(--radius-panel)] border border-line bg-bg p-7" style={`--reveal-delay:${i * 60}ms`}>
+          <Icon name="quote" size={32} class="text-accent" />
+          <blockquote class="mt-6 text-base leading-relaxed text-ink">“{t.quote}”</blockquote>
+          <figcaption class="mt-8 text-sm"><span class="block font-medium text-ink">{t.name}</span><span class="text-muted">{t.role}</span></figcaption>
+        </figure>
+      ))}
+    </div>
+  </Section>
+
   <!-- HOW WE BUILD: sticky story -->
   <Section tone="ink">
     <SectionHeader
-      number="03"
+      number="04"
       eyebrow="How we build"
       title="First principles over defaults"
       intro="We avoid unnecessary complexity because it increases mental overhead for users. Simplicity requires intent — and we choose it deliberately."
@@ -159,7 +181,7 @@ const services = [
     <div class="grid gap-12 lg:grid-cols-12 lg:gap-8">
       <div class="lg:col-span-5">
         <SectionHeader
-          number="04"
+          number="05"
           eyebrow="Services"
           title="Beyond products: solutions we build with you"
           intro="Document AI and AppSheet / workflow solutions that remove repetitive effort from how your team works."
@@ -185,7 +207,7 @@ const services = [
   <Section tone="base">
     <div class="grid gap-12 lg:grid-cols-12 lg:items-end lg:gap-8">
       <blockquote class="reveal lg:col-span-7">
-        <p class="meta mb-8 text-muted">05 — About</p>
+        <p class="meta mb-8 text-muted">06 — About</p>
         <p class="font-display text-[length:var(--text-h1)] font-medium leading-[1.08] tracking-[-0.03em] text-ink">
           “When a tool fades into the background, it is working <span class="text-accent">exactly as intended.</span>”
         </p>

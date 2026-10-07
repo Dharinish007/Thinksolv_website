@@ -29,7 +29,7 @@ const cols = [
           <h3 class="meta text-muted">{col.title}</h3>
           <ul class="mt-5 space-y-3">
             {col.links.map((l) => (
-              <li><a href={l.href} class="link-underline text-sm text-ink-soft transition-colors hover:text-ink">{l.label}</a></li>
+              <li><a href={l.href} class="tap link-underline text-sm text-ink-soft transition-colors hover:text-ink">{l.label}</a></li>
             ))}
           </ul>
         </nav>
@@ -37,9 +37,9 @@ const cols = [
       <div class="lg:col-span-2">
         <h3 class="meta text-muted">Contact</h3>
         <ul class="mt-5 space-y-3 text-sm">
-          <li><a href={`mailto:${site.email}`} class="link-underline inline-flex items-center gap-2 text-ink-soft hover:text-ink"><Icon name="mail" size={15} />{site.email}</a></li>
+          <li><a href={`mailto:${site.email}`} class="tap link-underline inline-flex items-center gap-2 text-ink-soft hover:text-ink"><Icon name="mail" size={15} />{site.email}</a></li>
           {socials.map((s) => (
-            <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="link-underline text-ink-soft hover:text-ink">{s.label}</a></li>
+            <li><a href={s.href} target="_blank" rel="noopener noreferrer" class="tap link-underline text-ink-soft hover:text-ink">{s.label}</a></li>
           ))}
         </ul>
       </div>
