@@ -193,6 +193,17 @@
   .tap { position: relative; }
   .tap::after { content: ''; position: absolute; inset: -0.875rem -0.5rem; }
 
+  /* Scroll progress bar: fills left → right as the page scrolls. Native scroll-timeline where supported;
+     motion.ts writes --scroll-p otherwise. */
+  .scroll-progress {
+    position: fixed; inset: 0 0 auto 0; z-index: 150; height: 3px; pointer-events: none;
+    background: var(--color-accent); transform-origin: 0 50%; transform: scaleX(var(--scroll-p, 0));
+  }
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress { transform: scaleX(0); animation: scroll-progress linear both; animation-timeline: scroll(root); }
+    @keyframes scroll-progress { to { transform: scaleX(1); } }
+  }
+
   /* Cursor spotlight — JS writes --mx/--my; visible only on fine pointers */
   .spotlight { position: relative; isolation: isolate; }
   .spotlight::before,
@@ -233,3 +244,8 @@
 @media (min-width: 768px) {
   .container-x { padding-inline: 2rem; }
 }
+
+/* Products showcase: fade in the newly selected panel */
+.showcase-panel:not([hidden]) { animation: showcase-in var(--dur-base) var(--ease-out) both; }
+@keyframes showcase-in { from { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .showcase-panel { animation: none !important; } }

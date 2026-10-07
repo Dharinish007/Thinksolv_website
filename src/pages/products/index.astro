@@ -47,32 +47,45 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
     </div>
   </PageHero>
 
-  <!-- FEATURED -->
-  {featured && (
-    <Section tone="ink">
-      <div class="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-        <div class="reveal lg:col-span-5">
-          <p class="meta mb-6 text-on-ink-muted">01 — Featured product</p>
-          <h2 class="text-[length:var(--text-h1)] leading-[1.04] text-on-ink">{featured.data.name}</h2>
-          <p class="mt-5 text-[length:var(--text-lead)] leading-relaxed text-on-ink-muted">{featured.data.tagline}</p>
+  <!-- FEATURED: tabbed showcase (default tab = featured product) -->
+  <Section tone="ink">
+    <p class="reveal meta mb-6 text-on-ink-muted">01 — Featured products</p>
+    <div class="reveal mb-10 flex gap-1 overflow-x-auto border-b border-white/10 [scrollbar-width:none]" role="tablist" aria-label="Featured products" data-showcase-tabs>
+      {products.map((p) => (
+        <button
+          type="button"
+          role="tab"
+          id={`tab-${p.id}`}
+          aria-controls={`panel-${p.id}`}
+          aria-selected={p.id === featured.id ? 'true' : 'false'}
+          tabindex={p.id === featured.id ? 0 : -1}
+          class="-mb-px whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-on-ink-muted transition-colors duration-[var(--dur-base)] hover:text-on-ink aria-selected:border-accent aria-selected:text-on-ink"
+        >{p.data.name.replace(/ Pro$/, '')}</button>
+      ))}
+    </div>
+    {products.map((p) => (
+      <div role="tabpanel" id={`panel-${p.id}`} aria-labelledby={`tab-${p.id}`} hidden={p.id !== featured.id} class="showcase-panel grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+        <div class="lg:col-span-5">
+          <h2 class="text-[length:var(--text-h1)] leading-[1.04] text-on-ink">{p.data.name}</h2>
+          <p class="mt-5 text-[length:var(--text-lead)] leading-relaxed text-on-ink-muted">{p.data.tagline}</p>
           <ul class="mt-8 space-y-3 border-t border-white/10 pt-6">
-            {featured.data.features.slice(0, 3).map((f) => (
+            {p.data.features.slice(0, 3).map((f) => (
               <li class="flex items-start gap-3 text-sm text-on-ink-muted">
                 <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
                 <span><strong class="font-medium text-on-ink">{f.title}.</strong> {f.body}</span>
               </li>
             ))}
           </ul>
-          <div class="mt-9"><Button href={`/products/${featured.id}`}>Explore {featured.data.name}</Button></div>
+          <div class="mt-9"><Button href={`/products/${p.id}`}>Explore {p.data.name}</Button></div>
         </div>
-        <div class="reveal lg:col-span-6 lg:col-start-7" style="--reveal-delay:100ms">
+        <div class="lg:col-span-6 lg:col-start-7">
           <div class="rounded-[var(--radius-panel)] border border-white/10 bg-ink-2 p-6 md:p-10">
-            <ProductMock product={featured} class="shadow-lift" />
+            <ProductMock product={p} class="shadow-lift" />
           </div>
         </div>
       </div>
-    </Section>
-  )}
+    ))}
+  </Section>
 
   <!-- ALL PRODUCTS + FILTER -->
   <Section tone="base">
@@ -109,6 +122,32 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
 </Base>
 
 <script>
+  // Featured showcase: WAI-ARIA tabs (click + Arrow/Home/End keys).
+  document.addEventListener('astro:page-load', () => {
+    const list = document.querySelector<HTMLElement>('[data-showcase-tabs]');
+    if (!list) return;
+    const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+    const select = (tab: HTMLButtonElement) => {
+      tabs.forEach((t) => {
+        const on = t === tab;
+        t.setAttribute('aria-selected', String(on));
+        t.tabIndex = on ? 0 : -1;
+        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+      });
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t));
+      t.addEventListener('keydown', (e) => {
+        const n = tabs.length;
+        const next = ({ ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        tabs[next].focus();
+        select(tabs[next]);
+      });
+    });
+  });
+
   // Segmented filter with FLIP reordering. Re-binds on every ClientRouter navigation.
   const reduce = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
   const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';

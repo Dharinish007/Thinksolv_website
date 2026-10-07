@@ -142,6 +142,16 @@ function runNavLoader(): Promise<void> {
   });
 }
 
+/* ---------------- Scroll progress fallback (browsers without CSS scroll timelines) ---------------- */
+if (!CSS.supports('animation-timeline: scroll()')) {
+  const setProgress = () => {
+    const max = document.documentElement.scrollHeight - innerHeight;
+    document.documentElement.style.setProperty('--scroll-p', String(max > 0 ? Math.min(1, scrollY / max) : 0));
+  };
+  addEventListener('scroll', setProgress, { passive: true });
+  document.addEventListener('astro:page-load', setProgress);
+}
+
 /* ---------------- Lifecycle ---------------- */
 let first = true;
 document.addEventListener('astro:page-load', async () => {
