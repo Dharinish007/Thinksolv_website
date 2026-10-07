@@ -107,7 +107,7 @@ function runPreloader(): Promise<void> {
     if (elapsed > 700) { finish(); return; } // scripts arrived late — skip the flourish
     const cap = setTimeout(finish, 1100 - elapsed);
     setTimeout(() => {
-      const from = pre.querySelector<SVGElement>('[data-preloader-mark]');
+      const from = pre.querySelector<SVGElement>('svg');
       const to = document.querySelector<SVGElement>('#site-header [data-logo-mark]');
       if (!from || !to || !to.getClientRects().length) return;
       const a = from.getBoundingClientRect(), b = to.getBoundingClientRect();
@@ -123,12 +123,31 @@ function runPreloader(): Promise<void> {
   });
 }
 
+/* Client-side navigation: the incoming page is swapped in with the loader already showing,
+   plays the logo animation, then fades away. */
+document.addEventListener('astro:before-swap', (e) => {
+  if (reduce()) return;
+  (e as Event & { newDocument: Document }).newDocument.documentElement.classList.add('preload', 'preload-nav');
+});
+
+function runNavLoader(): Promise<void> {
+  const html = document.documentElement;
+  const pre = document.getElementById('preloader');
+  if (!html.classList.contains('preload-nav') || !pre) return Promise.resolve();
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      pre.classList.add('is-leaving');
+      setTimeout(() => { html.classList.remove('preload', 'preload-nav'); pre.classList.remove('is-leaving'); resolve(); }, 260);
+    }, 760);
+  });
+}
+
 /* ---------------- Lifecycle ---------------- */
 let first = true;
 document.addEventListener('astro:page-load', async () => {
   initReveals();
   initCounters();
   initStepStories();
-  if (first) { first = false; await runPreloader(); }
+  if (first) { first = false; await runPreloader(); } else await runNavLoader();
   playIntro();
 });

@@ -73,16 +73,15 @@ const orgJsonLd = {
     <Font cssVariable="--ff-display" preload />
     <Font cssVariable="--ff-mono" />
 
-    <!-- JS flag + first-visit preloader flag, set before paint.
+    <!-- JS flag + preloader flag (every full load), set before paint.
          Failsafe removes `preload` if motion.ts never runs. -->
     <script is:inline>
       (function () {
         var h = document.documentElement;
         h.classList.add('js');
         try {
-          if (!sessionStorage.getItem('ts-intro') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
             h.classList.add('preload');
-            sessionStorage.setItem('ts-intro', '1');
             setTimeout(function () { h.classList.remove('preload'); }, 1300);
           }
         } catch (e) {}
