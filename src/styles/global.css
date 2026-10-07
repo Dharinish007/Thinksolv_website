@@ -245,7 +245,20 @@
   .container-x { padding-inline: 2rem; }
 }
 
-/* Products showcase: fade in the newly selected panel */
-.showcase-panel:not([hidden]) { animation: showcase-in var(--dur-base) var(--ease-out) both; }
-@keyframes showcase-in { from { opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .showcase-panel { animation: none !important; } }
+/* Products featured carousel: copy enters in layers from the direction of travel, then the mock lifts in */
+.showcase-panel:not([hidden]) [style*="--i"] {
+  animation: showcase-in var(--dur-reveal) var(--ease-out) both;
+  animation-delay: calc(var(--i) * var(--dur-fast) / 3);
+}
+.showcase-panel:not([hidden]) .showcase-mock {
+  animation: showcase-lift var(--dur-reveal) var(--ease-out) both;
+  animation-delay: calc(var(--dur-fast) / 2);
+}
+.showcase-panel[data-dir="prev"] { --showcase-from: -40px; }
+@keyframes showcase-in { from { opacity: 0; transform: translateX(var(--showcase-from, 40px)); } }
+@keyframes showcase-lift { from { opacity: 0; transform: translateY(24px) scale(0.96); } }
+/* Soft accent glow behind the mock for depth on the ink section */
+.showcase-glow { background: radial-gradient(closest-side, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent); filter: blur(24px); }
+@media (prefers-reduced-motion: reduce) {
+  .showcase-panel [style*="--i"], .showcase-panel .showcase-mock { animation: none !important; }
+}

@@ -1,27 +1,68 @@
 ---
 // Mini product UI mock built from the product's own step titles. Decorative (aria-hidden).
+// Some products get a body that shows their job; everything else uses the checklist.
 import Icon from './Icon.astro';
 import type { CollectionEntry } from 'astro:content';
 interface Props { product: CollectionEntry<'products'>; class?: string }
 const { product, class: className = '' } = Astro.props;
 const { data } = product;
+const variant = product.id === 'docs-to-pdf-pro' ? 'pdf' : product.id === 'bulk-converter-pro' ? 'bulk' : 'list';
 ---
 <div class:list={['rounded-xl border border-line bg-bg p-4 text-left', className]} aria-hidden="true">
   <div class="mb-3 flex items-center gap-1.5">
     <span class="h-2 w-2 rounded-full bg-line-strong"></span><span class="h-2 w-2 rounded-full bg-line-strong"></span><span class="h-2 w-2 rounded-full bg-line-strong"></span>
     <span class="meta ml-2 text-[0.6rem] text-muted">{data.name}</span>
   </div>
-  <ul class="space-y-2">
-    {['Quarterly report', 'Client proposal', 'Meeting notes'].map((doc, i) => (
-      <li class="flex items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
-        <span class:list={['inline-flex h-4 w-4 items-center justify-center rounded border', i < 2 ? 'border-accent bg-accent text-white' : 'border-line-strong']}>
-          {i < 2 && <Icon name="check" size={11} />}
-        </span>
-        <Icon name="doc" size={14} class="text-muted" />{doc}
-        <span class="ml-auto h-1.5 w-12 rounded-full bg-line"></span>
-      </li>
-    ))}
-  </ul>
+
+  {variant === 'pdf' && (
+    <div class="flex items-center gap-3">
+      <div class="flex-1 space-y-1.5 rounded-lg border border-line bg-surface p-3">
+        <div class="mb-2 flex items-center gap-1.5 text-[0.65rem] text-muted"><Icon name="doc" size={12} />Proposal.gdoc</div>
+        <span class="block h-2 w-3/4 rounded-full bg-line-strong"></span>
+        <span class="block h-1.5 w-full rounded-full bg-line"></span>
+        <span class="block h-1.5 w-5/6 rounded-full bg-line"></span>
+        <span class="block h-1.5 w-2/3 rounded-full bg-line"></span>
+      </div>
+      <Icon name="arrow" size={16} class="shrink-0 text-accent" />
+      <div class="relative flex-1 space-y-1.5 rounded-lg border border-line bg-surface p-3 shadow-lift">
+        <span class="absolute -right-2 -top-2 rounded bg-accent px-1.5 py-0.5 text-[0.6rem] font-semibold text-white">PDF</span>
+        <div class="mb-2 flex items-center gap-1.5 text-[0.65rem] text-muted"><Icon name="pdf" size={12} />Proposal.pdf</div>
+        <span class="block h-2 w-3/4 rounded-full bg-ink-soft/70"></span>
+        <span class="block h-1.5 w-full rounded-full bg-line-strong"></span>
+        <span class="block h-1.5 w-5/6 rounded-full bg-line-strong"></span>
+        <span class="block h-1.5 w-2/3 rounded-full bg-line-strong"></span>
+      </div>
+    </div>
+  )}
+
+  {variant === 'bulk' && (
+    <ul class="space-y-2">
+      {[['Client contracts', 24, 'w-full'], ['Q3 reports', 18, 'w-2/3'], ['Onboarding docs', 9, 'w-1/4']].map(([folder, count, width]) => (
+        <li class="rounded-lg border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
+          <div class="flex items-center gap-3">
+            <Icon name="bulk" size={14} class="text-muted" />{folder}
+            <span class="ml-auto font-mono text-[0.65rem] text-muted">{count} files</span>
+          </div>
+          <span class="mt-2 block h-1 w-full overflow-hidden rounded-full bg-line"><span class:list={['block h-full rounded-full bg-accent', width]}></span></span>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {variant === 'list' && (
+    <ul class="space-y-2">
+      {['Quarterly report', 'Client proposal', 'Meeting notes'].map((doc, i) => (
+        <li class="flex items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-ink-soft">
+          <span class:list={['inline-flex h-4 w-4 items-center justify-center rounded border', i < 2 ? 'border-accent bg-accent text-white' : 'border-line-strong']}>
+            {i < 2 && <Icon name="check" size={11} />}
+          </span>
+          <Icon name="doc" size={14} class="text-muted" />{doc}
+          <span class="ml-auto h-1.5 w-12 rounded-full bg-line"></span>
+        </li>
+      ))}
+    </ul>
+  )}
+
   <div class="mt-3 flex items-center justify-between">
     <span class="text-[0.7rem] text-muted">{data.howItWorks[1]?.title ?? ''}</span>
     <span class="rounded-full bg-accent px-3 py-1 text-[0.7rem] font-medium text-white">{data.howItWorks[2]?.title ?? 'Run'}</span>

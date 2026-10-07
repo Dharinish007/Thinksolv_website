@@ -12,7 +12,9 @@ import Icon from '@/components/Icon.astro';
 const products = (await getCollection('products')).sort((a, b) => a.data.order - b.data.order);
 const categories = ['All', ...Array.from(new Set(products.map((p) => p.data.category)))];
 const countFor = (c: string) => (c === 'All' ? products.length : products.filter((p) => p.data.category === c).length);
-const featured = products.find((p) => p.data.featured) ?? products[0];
+const featuredList = products.filter((p) => p.data.featured);
+const arrowBtn = "inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/15 text-on-ink transition-colors duration-[var(--dur-base)] hover:border-accent hover:text-accent";
+const featured = featuredList.length ? featuredList : products.slice(0, 1);
 
 // Platform badges come from the collection itself — no platform is shown that has no product.
 const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map((pl) => ({
@@ -47,44 +49,61 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
     </div>
   </PageHero>
 
-  <!-- FEATURED: tabbed showcase (default tab = featured product) -->
+  <!-- FEATURED: carousel of featured products (manual only, no autoplay) -->
   <Section tone="ink">
-    <p class="reveal meta mb-6 text-on-ink-muted">01 — Featured products</p>
-    <div class="reveal mb-10 flex gap-1 overflow-x-auto border-b border-white/10 [scrollbar-width:none]" role="tablist" aria-label="Featured products" data-showcase-tabs>
-      {products.map((p) => (
-        <button
-          type="button"
-          role="tab"
-          id={`tab-${p.id}`}
-          aria-controls={`panel-${p.id}`}
-          aria-selected={p.id === featured.id ? 'true' : 'false'}
-          tabindex={p.id === featured.id ? 0 : -1}
-          class="-mb-px whitespace-nowrap border-b-2 border-transparent px-3 py-3 text-sm font-medium text-on-ink-muted transition-colors duration-[var(--dur-base)] hover:text-on-ink aria-selected:border-accent aria-selected:text-on-ink"
-        >{p.data.name.replace(/ Pro$/, '')}</button>
-      ))}
-    </div>
-    {products.map((p) => (
-      <div role="tabpanel" id={`panel-${p.id}`} aria-labelledby={`tab-${p.id}`} hidden={p.id !== featured.id} class="showcase-panel grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
-        <div class="lg:col-span-5">
-          <h2 class="text-[length:var(--text-h1)] leading-[1.04] text-on-ink">{p.data.name}</h2>
-          <p class="mt-5 text-[length:var(--text-lead)] leading-relaxed text-on-ink-muted">{p.data.tagline}</p>
-          <ul class="mt-8 space-y-3 border-t border-white/10 pt-6">
-            {p.data.features.slice(0, 3).map((f) => (
-              <li class="flex items-start gap-3 text-sm text-on-ink-muted">
-                <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
-                <span><strong class="font-medium text-on-ink">{f.title}.</strong> {f.body}</span>
-              </li>
-            ))}
-          </ul>
-          <div class="mt-9"><Button href={`/products/${p.id}`}>Explore {p.data.name}</Button></div>
+    <section class="overflow-x-clip" aria-roledescription="carousel" aria-label="Featured products" data-carousel>
+    <div class="reveal mb-10 flex items-center justify-between gap-4">
+      <p class="meta text-on-ink-muted">01 — Featured products</p>
+      {featured.length > 1 && (
+        <div class="flex items-center gap-3">
+          <span class="whitespace-nowrap font-mono text-sm tabular-nums text-on-ink-muted" aria-hidden="true"><span data-carousel-index>1</span> / {featured.length}</span>
+          <button type="button" class:list={[arrowBtn, 'lg:hidden']} aria-label="Previous product" data-carousel-prev><Icon name="arrow" size={18} class="rotate-180" /></button>
+          <button type="button" class:list={[arrowBtn, 'lg:hidden']} aria-label="Next product" data-carousel-next><Icon name="arrow" size={18} /></button>
         </div>
-        <div class="lg:col-span-6 lg:col-start-7">
-          <div class="rounded-[var(--radius-panel)] border border-white/10 bg-ink-2 p-6 md:p-10">
-            <ProductMock product={p} class="shadow-lift" />
+      )}
+    </div>
+    <p class="sr-only" aria-live="polite" data-carousel-status></p>
+    <div class="relative lg:px-20">
+      {featured.length > 1 && (
+        <div class="hidden lg:block">
+          <button type="button" class:list={[arrowBtn, 'absolute left-0 top-1/2 -translate-y-1/2']} aria-label="Previous product" data-carousel-prev><Icon name="arrow" size={18} class="rotate-180" /></button>
+          <button type="button" class:list={[arrowBtn, 'absolute right-0 top-1/2 -translate-y-1/2']} aria-label="Next product" data-carousel-next><Icon name="arrow" size={18} /></button>
+        </div>
+      )}
+      {featured.map((p, i) => (
+        <div role="group" aria-roledescription="slide" aria-label={`${i + 1} of ${featured.length}: ${p.data.name}`} hidden={i !== 0} class="showcase-panel grid items-center gap-12 lg:grid-cols-12 lg:gap-8" data-carousel-slide>
+          <div class="lg:col-span-5">
+            <h2 class="text-[length:var(--text-h1)] leading-[1.04] text-on-ink" style="--i:0">{p.data.name}</h2>
+            <p class="mt-5 text-[length:var(--text-lead)] leading-relaxed text-on-ink-muted" style="--i:1">{p.data.tagline}</p>
+            <ul class="mt-8 space-y-3 border-t border-white/10 pt-6" style="--i:2">
+              {p.data.features.slice(0, 3).map((f) => (
+                <li class="flex items-start gap-3 text-sm text-on-ink-muted">
+                  <Icon name="check" size={18} class="mt-0.5 shrink-0 text-accent" />
+                  <span><strong class="font-medium text-on-ink">{f.title}.</strong> {f.body}</span>
+                </li>
+              ))}
+            </ul>
+            <div class="mt-9" style="--i:3"><Button href={`/products/${p.id}`}>Explore {p.data.name}</Button></div>
+          </div>
+          <div class="showcase-mock relative lg:col-span-6 lg:col-start-7">
+            <div class="showcase-glow pointer-events-none absolute -inset-8" aria-hidden="true"></div>
+            <div class="relative rounded-[var(--radius-panel)] border border-white/10 bg-ink-2 p-6 md:p-10">
+              <ProductMock product={p} class="shadow-lift" />
+            </div>
           </div>
         </div>
+      ))}
+    </div>
+    {featured.length > 1 && (
+      <div class="mt-12 flex justify-center gap-1">
+        {featured.map((p, i) => (
+          <button type="button" class="group inline-flex h-11 items-center px-1" aria-label={`Show ${p.data.name}`} aria-current={i === 0 ? 'true' : undefined} data-carousel-dot>
+            <span class="block h-2 w-2 rounded-full bg-white/25 transition-[width,background-color] duration-[var(--dur-base)] ease-[var(--ease-out)] group-hover:bg-white/50 group-aria-[current]:w-6 group-aria-[current]:bg-accent"></span>
+          </button>
+        ))}
       </div>
-    ))}
+    )}
+    </section>
   </Section>
 
   <!-- ALL PRODUCTS + FILTER -->
@@ -122,29 +141,42 @@ const platforms = Array.from(new Set(products.map((p) => p.data.platform))).map(
 </Base>
 
 <script>
-  // Featured showcase: WAI-ARIA tabs (click + Arrow/Home/End keys).
+  // Featured carousel: prev/next buttons, ←/→ keys, swipe. No autoplay.
   document.addEventListener('astro:page-load', () => {
-    const list = document.querySelector<HTMLElement>('[data-showcase-tabs]');
-    if (!list) return;
-    const tabs = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
-    const select = (tab: HTMLButtonElement) => {
-      tabs.forEach((t) => {
-        const on = t === tab;
-        t.setAttribute('aria-selected', String(on));
-        t.tabIndex = on ? 0 : -1;
-        document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+    const root = document.querySelector<HTMLElement>('[data-carousel]');
+    if (!root) return;
+    const slides = Array.from(root.querySelectorAll<HTMLElement>('[data-carousel-slide]'));
+    const index = root.querySelector<HTMLElement>('[data-carousel-index]');
+    const status = root.querySelector<HTMLElement>('[data-carousel-status]');
+    if (slides.length < 2) return;
+    const dots = Array.from(root.querySelectorAll<HTMLElement>('[data-carousel-dot]'));
+    let current = 0;
+
+    const go = (step: number) => {
+      if (!step) return;
+      current = (current + step + slides.length) % slides.length;
+      slides.forEach((s, i) => {
+        s.hidden = i !== current;
+        s.dataset.dir = step > 0 ? 'next' : 'prev';
       });
+      dots.forEach((d, i) => (i === current ? d.setAttribute('aria-current', 'true') : d.removeAttribute('aria-current')));
+      if (index) index.textContent = String(current + 1);
+      if (status) status.textContent = slides[current].getAttribute('aria-label') ?? '';
     };
-    tabs.forEach((t, i) => {
-      t.addEventListener('click', () => select(t));
-      t.addEventListener('keydown', (e) => {
-        const n = tabs.length;
-        const next = ({ ArrowRight: (i + 1) % n, ArrowLeft: (i - 1 + n) % n, Home: 0, End: n - 1 } as Record<string, number>)[e.key];
-        if (next === undefined) return;
-        e.preventDefault();
-        tabs[next].focus();
-        select(tabs[next]);
-      });
+
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i - current)));
+    root.querySelectorAll('[data-carousel-prev]').forEach((b) => b.addEventListener('click', () => go(-1)));
+    root.querySelectorAll('[data-carousel-next]').forEach((b) => b.addEventListener('click', () => go(1)));
+    root.addEventListener('keydown', (e) => {
+      if ((e.target as HTMLElement).closest('a')) return;
+      if (e.key === 'ArrowRight') go(1);
+      else if (e.key === 'ArrowLeft') go(-1);
+    });
+    let startX = 0;
+    root.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+    root.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1);
     });
   });
 

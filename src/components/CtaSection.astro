@@ -42,6 +42,16 @@ const {
     border-radius: 50%;
     background: radial-gradient(closest-side, rgb(224 72 60 / 0.22), rgb(224 72 60 / 0.06) 55%, transparent);
   }
+  /* Hover: the arrow glows red and pulses once; the primary button gets a soft coral halo */
+  .cta-band :global(.btn:hover svg) { filter: drop-shadow(0 0 6px var(--color-accent-bright)); }
+  .cta-band :global(.btn:hover) { box-shadow: 0 0 0 4px rgb(224 72 60 / 0.18), 0 8px 28px rgb(224 72 60 / 0.35); }
+  @media (prefers-reduced-motion: no-preference) {
+    .cta-band :global(.btn:hover svg) { animation: cta-arrow-glow 1.2s ease-in-out infinite; }
+  }
+  @keyframes cta-arrow-glow {
+    0%, 100% { filter: drop-shadow(0 0 3px var(--color-accent-bright)); }
+    50% { filter: drop-shadow(0 0 9px var(--color-accent-bright)) drop-shadow(0 0 16px var(--color-accent)); }
+  }
   /* One slow drift when the band is on screen, then it rests (CSS scroll-driven; static elsewhere) */
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
